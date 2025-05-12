@@ -1,0 +1,64 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title or "Resume Builder" }}</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Optional: You can configure Tailwind CSS here
+    </script>
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #a0aec0; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #718096; }
+
+        /* Basic Form Input Styling (can be overridden by more specific Tailwind or inline styles) */
+        .form-input-base, .form-textarea-base {
+            margin-top: 0.25rem; /* mt-1 */
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem; /* px-3 py-2 */
+            background-color: white;
+            border: 1px solid #cbd5e1; /* border-slate-300 */
+            border-radius: 0.375rem; /* rounded-md */
+            font-size: 0.875rem; /* text-sm */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+        }
+        .form-input-base:focus, .form-textarea-base:focus {
+            outline: none;
+            border-color: #38bdf8; /* focus:border-sky-500 */
+            box-shadow: 0 0 0 1px #38bdf8; /* focus:ring-1 focus:ring-sky-500 */
+        }
+        .form-checkbox-base {
+            margin-top: 0.25rem;
+            border-radius: 0.25rem; /* rounded */
+            border-color: #cbd5e1; /* border-slate-300 */
+            color: #0ea5e9; /* text-sky-600 */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+        }
+        .form-checkbox-base:focus {
+            border-color: #7dd3fc; /* focus:border-sky-300 */
+            /* ring properties are harder to replicate simply in plain CSS without Tailwind's ring utilities */
+        }
+    </style>
+    {% block head_extra_styles %}{% endblock %} <!-- Placeholder for page-specific styles -->
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased">
+    <div class="container mx-auto p-4 sm:p-6 md:p-8">
+        {% block content %}{% endblock %}
+    </div>
+    {% block body_end_scripts %}{% endblock %} <!-- Placeholder for page-specific scripts -->
+</body>
+</html>

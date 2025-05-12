@@ -1,0 +1,438 @@
+<!-- templates/form.html -->
+{% extends "base.html" %}
+
+{% block head_extra_styles %}
+<style>
+    /* Additional page-specific styles if needed */
+    .form-input {
+        @apply form-input-base placeholder-slate-400;
+    }
+    .form-textarea {
+        @apply form-textarea-base placeholder-slate-400;
+        min-height: 80px;
+    }
+    .form-checkbox {
+        @apply form-checkbox-base h-5 w-5; /* Tailwind classes for size */
+    }
+    /* The @apply directives above will only work if you have a Tailwind build process.
+       If using CDN only, the base styles from base.html will apply,
+       and you'd add Tailwind utilities directly for more complex styling.
+       For CDN, we'll rely on the base styles primarily for the input fields themselves.
+    */
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white p-6 md:p-10 rounded-xl shadow-lg">
+    <h1 class="text-3xl font-bold text-center text-sky-700 mb-8">{{ title }}</h1>
+    <form method="POST" action="{{ url_for('resume_form') }}" class="space-y-8">
+
+        <!-- Personal Details Section -->
+        <fieldset class="border border-slate-300 p-6 rounded-md">
+            <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Personal Details</legend>
+            <div class="space-y-4">
+                <div>
+                    <label for="full_name" class="block text-sm font-medium text-slate-700 mb-1">Full Name:</label>
+                    <input type="text" id="full_name" name="full_name" required value="{{ data.full_name | default('', true) }}" class="form-input-base placeholder-slate-400">
+                </div>
+                <div>
+                    <label for="title_subtitle" class="block text-sm font-medium text-slate-700 mb-1">Title/Subtitle (under name):</label>
+                    <input type="text" id="title_subtitle" name="title_subtitle" value="{{ data.title_subtitle | default('', true) }}" class="form-input-base placeholder-slate-400">
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email:</label>
+                    <input type="email" id="email" name="email" required value="{{ data.email | default('', true) }}" class="form-input-base placeholder-slate-400">
+                </div>
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-slate-700 mb-1">Phone:</label>
+                    <input type="tel" id="phone" name="phone" value="{{ data.phone | default('', true) }}" class="form-input-base placeholder-slate-400">
+                </div>
+                 <div>
+                    <label for="linkedin" class="block text-sm font-medium text-slate-700 mb-1">LinkedIn (e.g., linkedin.com/in/yourname):</label>
+                    <input type="text" id="linkedin" name="linkedin" value="{{ data.linkedin | default('', true) }}" class="form-input-base placeholder-slate-400">
+                </div>
+                <div>
+                    <label for="location" class="block text-sm font-medium text-slate-700 mb-1">Location (City, State):</label>
+                    <input type="text" id="location" name="location" value="{{ data.location | default('', true) }}" class="form-input-base placeholder-slate-400">
+                </div>
+                <div>
+                    <label for="summary" class="block text-sm font-medium text-slate-700 mb-1">Professional Summary:</label>
+                    <textarea id="summary" name="summary" rows="4" required class="form-textarea-base placeholder-slate-400 min-h-[80px]">{{ data.summary | default('', true) }}</textarea>
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- Key Achievements -->
+        <fieldset class="border border-slate-300 p-6 rounded-md">
+            <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Key Achievements</legend>
+            {% for i in range(1, 4) %}
+            {% set ach = data.key_achievements[loop.index0] if data.key_achievements and loop.index0 < data.key_achievements|length else {} %}
+            <div class="mb-4 p-3 border border-slate-200 rounded-md bg-slate-50">
+                <h4 class="text-md font-medium text-slate-600 mb-2">Achievement {{i}}</h4>
+                <div>
+                    <label for="ach_title_{{i}}" class="block text-sm font-medium text-slate-700 mb-1">Title:</label>
+                    <input type="text" id="ach_title_{{i}}" name="ach_title_{{i}}" value="{{ ach.title | default('', true) }}" class="form-input-base placeholder-slate-400">
+                </div>
+                <div class="mt-3">
+                    <label for="ach_description_{{i}}" class="block text-sm font-medium text-slate-700 mb-1">Description:</label>
+                    <textarea id="ach_description_{{i}}" name="ach_description_{{i}}" rows="2" class="form-textarea-base placeholder-slate-400 min-h-[60px]">{{ ach.description | default('', true) }}</textarea>
+                </div>
+            </div>
+            {% endfor %}
+        </fieldset>
+        
+        <!-- Courses -->
+        <fieldset class="border border-slate-300 p-6 rounded-md">
+            <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Courses</legend>
+            {% for i in range(1, 3) %}
+            {% set course = data.courses[loop.index0] if data.courses and loop.index0 < data.courses|length else {} %}
+            <div class="mb-4 p-3 border border-slate-200 rounded-md bg-slate-50">
+                 <h4 class="text-md font-medium text-slate-600 mb-2">Course {{i}}</h4>
+                <div>
+                    <label for="course_title_{{i}}" class="block text-sm font-medium text-slate-700 mb-1">Course Title:</label>
+                    <input type="text" id="course_title_{{i}}" name="course_title_{{i}}" value="{{ course.title | default('', true) }}" class="form-input-base placeholder-slate-400">
+                </div>
+                <div class="mt-3">
+                    <label for="course_description_{{i}}" class="block text-sm font-medium text-slate-700 mb-1">Description:</label>
+                    <textarea id="course_description_{{i}}" name="course_description_{{i}}" rows="2" class="form-textarea-base placeholder-slate-400 min-h-[60px]">{{ course.description | default('', true) }}</textarea>
+                </div>
+            </div>
+            {% endfor %}
+        </fieldset>
+
+        <!-- Professional Experience Section -->
+        <fieldset class="border border-slate-300 p-6 rounded-md">
+            <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Professional Experience</legend>
+            <div id="experiences-container" class="space-y-6">
+                {% for exp in data.experiences %}
+                <div class="experience-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
+                    <button type="button" onclick="removeBlock(this, 'experience-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors">×</button>
+                    <h3 class="text-lg font-medium text-slate-700 mb-3">Experience <span class="item-number">{{ loop.index }}</span></h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="exp_title_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Job Title:</label>
+                            <input type="text" id="exp_title_{{loop.index0}}" name="exp_title[{{loop.index0}}]" value="{{ exp.title | default('', true) }}" class="form-input-base placeholder-slate-400" required>
+                        </div>
+                        <div>
+                            <label for="exp_company_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Company:</label>
+                            <input type="text" id="exp_company_{{loop.index0}}" name="exp_company[{{loop.index0}}]" value="{{ exp.company | default('', true) }}" class="form-input-base placeholder-slate-400">
+                        </div>
+                        <div>
+                            <label for="exp_location_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Location (City, State):</label>
+                            <input type="text" id="exp_location_{{loop.index0}}" name="exp_location[{{loop.index0}}]" value="{{ exp.location | default('', true) }}" class="form-input-base placeholder-slate-400">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                            <div>
+                                <label for="exp_start_date_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Start Date:</label>
+                                <input type="month" id="exp_start_date_{{loop.index0}}" name="exp_start_date[{{loop.index0}}]" value="{{ exp.start_date | default('', true) }}" class="form-input-base placeholder-slate-400">
+                            </div>
+                            <div>
+                                <label for="exp_end_date_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">End Date:</label>
+                                <input type="month" id="exp_end_date_{{loop.index0}}" name="exp_end_date[{{loop.index0}}]" value="{{ exp.end_date | default('', true) }}" class="form-input-base placeholder-slate-400" {% if exp.is_present %}disabled{% endif %}>
+                            </div>
+                            <div class="flex items-center mb-1 pt-6"> <!-- Added pt-6 for alignment with labels -->
+                                <input type="checkbox" id="exp_present_{{loop.index0}}" name="exp_present[{{loop.index0}}]" class="form-checkbox-base h-5 w-5 text-sky-600 focus:ring-sky-500" onchange="toggleEndDate(this, 'exp_end_date_{{loop.index0}}')" {% if exp.is_present %}checked{% endif %}>
+                                <label for="exp_present_{{loop.index0}}" class="ml-2 text-sm text-slate-700">I currently work here</label>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="exp_description_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Description (one point per line):</label>
+                            <textarea id="exp_description_{{loop.index0}}" name="exp_description[{{loop.index0}}]" rows="5" class="form-textarea-base placeholder-slate-400 min-h-[100px]">{{ exp.description | default('', true) }}</textarea>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" id="add-experience-btn" class="mt-6 px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                + Add Experience
+            </button>
+        </fieldset>
+
+        <!-- Education Section -->
+        <fieldset class="border border-slate-300 p-6 rounded-md">
+            <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Education</legend>
+            <div id="education-container" class="space-y-6">
+                {% for edu in data.education_entries %}
+                <div class="education-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
+                    <button type="button" onclick="removeBlock(this, 'education-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors">×</button>
+                    <h3 class="text-lg font-medium text-slate-700 mb-3">Education <span class="item-number">{{ loop.index }}</span></h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="edu_degree_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Degree/Certificate:</label>
+                            <input type="text" id="edu_degree_{{loop.index0}}" name="edu_degree[{{loop.index0}}]" value="{{ edu.degree | default('', true) }}" class="form-input-base placeholder-slate-400" required>
+                        </div>
+                        <div>
+                            <label for="edu_institution_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Institution:</label>
+                            <input type="text" id="edu_institution_{{loop.index0}}" name="edu_institution[{{loop.index0}}]" value="{{ edu.institution | default('', true) }}" class="form-input-base placeholder-slate-400">
+                        </div>
+                        <div>
+                            <label for="edu_location_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Location (City, State):</label>
+                            <input type="text" id="edu_location_{{loop.index0}}" name="edu_location[{{loop.index0}}]" value="{{ edu.edu_location | default('', true) }}" class="form-input-base placeholder-slate-400">
+                        </div>
+                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                            <div>
+                                <label for="edu_start_date_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Start Date:</label>
+                                <input type="month" id="edu_start_date_{{loop.index0}}" name="edu_start_date[{{loop.index0}}]" value="{{ edu.start_date | default('', true) }}" class="form-input-base placeholder-slate-400">
+                            </div>
+                            <div>
+                                <label for="edu_end_date_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">End Date:</label>
+                                <input type="month" id="edu_end_date_{{loop.index0}}" name="edu_end_date[{{loop.index0}}]" value="{{ edu.end_date | default('', true) }}" class="form-input-base placeholder-slate-400" {% if edu.is_present %}disabled{% endif %}>
+                            </div>
+                            <div class="flex items-center mb-1 pt-6"> <!-- Added pt-6 for alignment with labels -->
+                                <input type="checkbox" id="edu_present_{{loop.index0}}" name="edu_present[{{loop.index0}}]" class="form-checkbox-base h-5 w-5 text-sky-600 focus:ring-sky-500" onchange="toggleEndDate(this, 'edu_end_date_{{loop.index0}}')" {% if edu.is_present %}checked{% endif %}>
+                                <label for="edu_present_{{loop.index0}}" class="ml-2 text-sm text-slate-700">Currently enrolled</label>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="edu_details_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Details (e.g., GPA, Honors):</label>
+                            <textarea id="edu_details_{{loop.index0}}" name="edu_details[{{loop.index0}}]" rows="3" class="form-textarea-base placeholder-slate-400 min-h-[80px]">{{ edu.edu_details | default('', true) }}</textarea>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" id="add-education-btn" class="mt-6 px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                + Add Education
+            </button>
+        </fieldset>
+
+        <div class="flex justify-end mt-10">
+            <button type="submit" class="px-6 py-3 bg-sky-600 text-white font-semibold rounded-md shadow-md hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                Next: Choose Template
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Template for Experience Block -->
+<template id="experience-template">
+    <div class="experience-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
+        <button type="button" onclick="removeBlock(this, 'experience-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors">×</button>
+        <h3 class="text-lg font-medium text-slate-700 mb-3">Experience <span class="item-number"></span></h3>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Job Title:</label>
+                <input type="text" name="exp_title[]" class="form-input-base placeholder-slate-400" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Company:</label>
+                <input type="text" name="exp_company[]" class="form-input-base placeholder-slate-400">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Location (City, State):</label>
+                <input type="text" name="exp_location[]" class="form-input-base placeholder-slate-400">
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Start Date:</label>
+                    <input type="month" name="exp_start_date[]" class="form-input-base placeholder-slate-400">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">End Date:</label>
+                    <input type="month" name="exp_end_date[]" class="form-input-base placeholder-slate-400">
+                </div>
+                <div class="flex items-center mb-1 pt-6">
+                    <input type="checkbox" name="exp_present[]" class="form-checkbox-base h-5 w-5 text-sky-600 focus:ring-sky-500" onchange="toggleEndDate(this)">
+                    <label class="ml-2 text-sm text-slate-700">I currently work here</label>
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Description (one point per line):</label>
+                <textarea name="exp_description[]" rows="5" class="form-textarea-base placeholder-slate-400 min-h-[100px]"></textarea>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Template for Education Block -->
+<template id="education-template">
+    <div class="education-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
+        <button type="button" onclick="removeBlock(this, 'education-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors">×</button>
+        <h3 class="text-lg font-medium text-slate-700 mb-3">Education <span class="item-number"></span></h3>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Degree/Certificate:</label>
+                <input type="text" name="edu_degree[]" class="form-input-base placeholder-slate-400" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Institution:</label>
+                <input type="text" name="edu_institution[]" class="form-input-base placeholder-slate-400">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Location (City, State):</label>
+                <input type="text" name="edu_location[]" class="form-input-base placeholder-slate-400">
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Start Date:</label>
+                    <input type="month" name="edu_start_date[]" class="form-input-base placeholder-slate-400">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">End Date:</label>
+                    <input type="month" name="edu_end_date[]" class="form-input-base placeholder-slate-400">
+                </div>
+                 <div class="flex items-center mb-1 pt-6">
+                    <input type="checkbox" name="edu_present[]" class="form-checkbox-base h-5 w-5 text-sky-600 focus:ring-sky-500" onchange="toggleEndDate(this)">
+                    <label class="ml-2 text-sm text-slate-700">Currently enrolled</label>
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Details (e.g., GPA, Honors):</label>
+                <textarea name="edu_details[]" rows="3" class="form-textarea-base placeholder-slate-400 min-h-[80px]"></textarea>
+            </div>
+        </div>
+    </div>
+</template>
+{% endblock %}
+
+{% block body_end_scripts %}
+<script>
+    let experienceIndex = {{ data.experiences|length if data.experiences else 0 }};
+    let educationIndex = {{ data.education_entries|length if data.education_entries else 0 }};
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Ensure at least one block is present if data is empty (for new resume)
+        if (experienceIndex === 0 && document.getElementById('experiences-container').children.length === 0) {
+            addExperienceBlock(true); // Pass true to indicate it's the initial block
+        }
+        if (educationIndex === 0 && document.getElementById('education-container').children.length === 0) {
+            addEducationBlock(true); // Pass true to indicate it's the initial block
+        }
+
+        document.getElementById('add-experience-btn').addEventListener('click', () => addExperienceBlock(false));
+        document.getElementById('add-education-btn').addEventListener('click', () => addEducationBlock(false));
+        
+        // Initialize existing "Present" checkboxes
+        document.querySelectorAll('input[name^="exp_present["], input[name^="edu_present["]').forEach(checkbox => {
+            const parentBlock = checkbox.closest('.experience-block, .education-block');
+            if (parentBlock) { // Ensure parentBlock is found
+                const endDateInput = parentBlock.querySelector('input[type="month"][name*="end_date"]');
+                if (endDateInput) {
+                    if (checkbox.checked) {
+                        endDateInput.disabled = true;
+                        endDateInput.value = '';
+                    } else {
+                        endDateInput.disabled = false;
+                    }
+                }
+            }
+        });
+    });
+
+    function addExperienceBlock(isInitial = false) {
+        const template = document.getElementById('experience-template').content.cloneNode(true);
+        const newBlock = template.querySelector('.experience-block');
+        
+        const currentIndex = experienceIndex; // Capture current index before incrementing
+
+        newBlock.querySelectorAll('input, textarea, label').forEach(el => {
+            if (el.name) {
+                el.name = el.name.replace('[]', `[${currentIndex}]`);
+            }
+            // For labels, we need to match the input's new ID.
+            // We'll set IDs on inputs/textareas based on their name.
+            if ((el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') && el.name) {
+                el.id = el.name.replace(/[\[\]]/g, '_').replace(/__$/, '_'+currentIndex); // Create a unique ID
+            }
+            if (el.tagName === 'LABEL' && el.htmlFor) { // For labels that might have a generic 'for'
+                // Try to find the corresponding input in this new block and link to it
+                const correspondingInputName = el.htmlFor.replace('[]',''); // Get base name
+                const targetInput = newBlock.querySelector(`[name^="${correspondingInputName}[${currentIndex}]"]`);
+                if(targetInput && targetInput.id) el.htmlFor = targetInput.id;
+            }
+
+            if (el.type === 'checkbox' && el.name.includes('present')) {
+                const endDateInputInBlock = newBlock.querySelector(`input[name="exp_end_date[${currentIndex}]"]`);
+                if (endDateInputInBlock) { // Ensure endDateInputInBlock is found
+                   el.onchange = function() { toggleEndDate(this, endDateInputInBlock); };
+                }
+            }
+        });
+        newBlock.querySelector('.item-number').textContent = document.getElementById('experiences-container').children.length + 1;
+        
+        // Hide remove button for the very first initial block
+        if (isInitial && document.getElementById('experiences-container').children.length === 0) {
+            const removeBtn = newBlock.querySelector('button[onclick*="removeBlock"]');
+            if(removeBtn) removeBtn.style.display = 'none';
+        }
+
+        document.getElementById('experiences-container').appendChild(newBlock);
+        if (!isInitial || experienceIndex === 0) { // Only increment if it's not just re-adding the first due to empty data
+           experienceIndex++;
+        }
+    }
+
+    function addEducationBlock(isInitial = false) {
+        const template = document.getElementById('education-template').content.cloneNode(true);
+        const newBlock = template.querySelector('.education-block');
+        const currentIndex = educationIndex;
+
+        newBlock.querySelectorAll('input, textarea, label').forEach(el => {
+            if (el.name) {
+                el.name = el.name.replace('[]', `[${currentIndex}]`);
+            }
+             if ((el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') && el.name) {
+                el.id = el.name.replace(/[\[\]]/g, '_').replace(/__$/, '_'+currentIndex);
+            }
+            if (el.tagName === 'LABEL' && el.htmlFor) {
+                const correspondingInputName = el.htmlFor.replace('[]','');
+                const targetInput = newBlock.querySelector(`[name^="${correspondingInputName}[${currentIndex}]"]`);
+                if(targetInput && targetInput.id) el.htmlFor = targetInput.id;
+            }
+            if (el.type === 'checkbox' && el.name.includes('present')) {
+                const endDateInputInBlock = newBlock.querySelector(`input[name="edu_end_date[${currentIndex}]"]`);
+                 if (endDateInputInBlock) {
+                    el.onchange = function() { toggleEndDate(this, endDateInputInBlock); };
+                }
+            }
+        });
+        newBlock.querySelector('.item-number').textContent = document.getElementById('education-container').children.length + 1;
+        
+        if (isInitial && document.getElementById('education-container').children.length === 0) {
+            const removeBtn = newBlock.querySelector('button[onclick*="removeBlock"]');
+            if(removeBtn) removeBtn.style.display = 'none';
+        }
+
+        document.getElementById('education-container').appendChild(newBlock);
+         if (!isInitial || educationIndex === 0) {
+            educationIndex++;
+        }
+    }
+
+    function removeBlock(button, blockClass) {
+        const container = button.closest('#experiences-container, #education-container');
+        const blockToRemove = button.closest('.' + blockClass);
+        if (blockToRemove) {
+            blockToRemove.remove();
+            // Re-number items after removal
+            const remainingBlocks = container.querySelectorAll('.' + blockClass);
+            remainingBlocks.forEach((block, index) => {
+                block.querySelector('.item-number').textContent = index + 1;
+            });
+        }
+    }
+
+    function toggleEndDate(checkboxElement, endDateInputOrId) {
+        let endDateEl;
+        if (typeof endDateInputOrId === 'string') { // For pre-rendered items with specific ID
+            endDateEl = document.getElementById(endDateInputOrId);
+        } else if (endDateInputOrId instanceof HTMLElement) { // For newly cloned items where element is passed
+            endDateEl = endDateInputOrId;
+        } else { // Fallback for newly cloned items if ID logic in addBlock needs refinement
+            const parentBlock = checkboxElement.closest('.experience-block, .education-block');
+            endDateEl = parentBlock ? parentBlock.querySelector('input[type="month"][name*="end_date"]') : null;
+        }
+
+        if (endDateEl) {
+            if (checkboxElement.checked) {
+                endDateEl.disabled = true;
+                endDateEl.value = '';
+            } else {
+                endDateEl.disabled = false;
+            }
+        } else {
+            console.warn("Could not find end date element for checkbox:", checkboxElement);
+        }
+    }
+</script>
+{% endblock %}
