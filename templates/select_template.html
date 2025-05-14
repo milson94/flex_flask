@@ -2,30 +2,55 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto bg-white p-6 md:p-10 rounded-xl shadow-lg">
+<div class="max-w-5xl mx-auto bg-white p-6 md:p-10 rounded-xl shadow-lg relative">
     <h1 class="text-3xl font-bold text-center text-sky-700 mb-6">{{ title }}</h1>
-    <p class="text-center text-slate-600 mb-10">Your information has been saved. Now, choose a template for your resume:</p>
+    <p class="text-center text-slate-600 mb-10">Your resume information is saved and ordered. Now, choose a template design:</p>
+
+     <!-- Display flash messages -->
+     {# Flash messages are now typically shown globally in base.html #}
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
         {% for id, tpl in templates.items() %}
         <div class="template-card bg-slate-50 border border-slate-300 rounded-lg shadow-md overflow-hidden
                     hover:shadow-xl transition-shadow duration-300 ease-in-out flex flex-col">
-            {% if tpl.preview_image and url_for('static', filename=tpl.preview_image) %}
-            <img src="{{ url_for('static', filename=tpl.preview_image) }}" alt="{{ tpl.name }} Preview"
-                 class="w-full h-48 object-cover border-b border-slate-200">
-            {% else %}
-            <div class="w-full h-48 bg-slate-200 flex items-center justify-center border-b border-slate-200">
-                <p class="text-slate-500 italic">No preview</p>
+
+            <!-- Preview Image Container -->
+            <div class="w-full h-56 bg-slate-200 flex items-center justify-center border-b border-slate-200 overflow-hidden cursor-pointer view-image-trigger"
+                 data-img-src="{{ url_for('static', filename=tpl.preview_image) if tpl.preview_image else '' }}"
+                 title="Click to view larger preview">
+                 {% if tpl.preview_image %}
+                    {% set img_src = url_for('static', filename=tpl.preview_image) %}
+                    <img src="{{ img_src }}"
+                         alt="{{ tpl.name }} Preview"
+                         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                         onerror="this.onerror=null; this.parentElement.innerHTML='<p class=\'text-slate-500 italic px-4 text-center\'>Preview not found</p>';">
+                 {% else %}
+                    {% set img_src = '' %} {# Set img_src to empty if no preview #}
+                    <p class="text-slate-500 italic px-4 text-center">No preview available</p>
+                 {% endif %}
             </div>
-            {% endif %}
+
+            <!-- Card Body -->
             <div class="p-4 flex flex-col flex-grow">
-                <h3 class="text-lg font-semibold text-sky-700 mb-2">{{ tpl.name }}</h3>
-                <div class="mt-auto"> {/* Pushes button to the bottom */}
+                <h3 class="text-lg font-semibold text-sky-700 mb-3">{{ tpl.name }}</h3>
+
+                <!-- Buttons pushed to the bottom -->
+                <div class="mt-auto space-y-2">
+
+                    <!-- View Preview Button (also triggers modal via JS) -->
+                    <button type="button"
+                       class="view-button block w-full text-center px-4 py-2 bg-teal-500 text-white font-medium rounded-md hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 transition ease-in-out duration-150 {% if not img_src %}opacity-50 cursor-not-allowed{% endif %}"
+                       data-img-src="{{ img_src }}"
+                       {% if not img_src %}disabled{% endif %}> {# Pass image source, disable if no src #}
+                        View Preview
+                    </button>
+
+                    <!-- Download Button -->
                     <a href="{{ url_for('download_resume', template_id=id) }}"
                        class="block w-full text-center px-4 py-2 bg-sky-600 text-white font-medium rounded-md
                               hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2
                               transition ease-in-out duration-150">
-                        Download
+                        Download PDF
                     </a>
                 </div>
             </div>
@@ -33,11 +58,112 @@
         {% endfor %}
     </div>
 
-    <div class="mt-12 text-center">
-        <a href="{{ url_for('resume_form') }}"
-           class="text-sky-600 hover:text-sky-800 hover:underline font-medium transition-colors">
-            ← Go back and edit information
+    <!-- Navigation Links -->
+    <div class="mt-12 flex justify-between items-center text-sm">
+        <a href="{{ url_for('order_sections') }}"
+           class="text-slate-600 hover:text-sky-800 hover:underline font-medium transition-colors">
+            ← Back to Order Sections
+        </a>
+         <a href="{{ url_for('resume_form') }}"
+           class="text-slate-600 hover:text-sky-800 hover:underline font-medium transition-colors">
+            ← Back to Edit Details
         </a>
     </div>
+
+</div> {# End max-w-5xl #}
+
+<!-- Modal Structure (Initially Hidden) -->
+<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 sm:p-6 md:p-8 z-50 hidden transition-opacity duration-300" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="bg-white rounded-lg shadow-xl overflow-hidden max-w-4xl w-full max-h-[90vh] flex flex-col">
+        <!-- Header -->
+        <div class="flex-shrink-0 flex justify-between items-center p-3 border-b border-slate-200 bg-slate-50">
+            <h2 id="modal-title" class="text-lg font-semibold text-slate-700">Template Preview</h2>
+            <button id="closeModalBtn" type="button" class="text-slate-400 hover:text-red-600 text-3xl leading-none font-light focus:outline-none" aria-label="Close">×</button>
+        </div>
+        <!-- Image Container -->
+        <div class="flex-grow p-4 overflow-hidden flex items-center justify-center min-h-0 bg-slate-100">
+             <img id="modalImage" src="" alt="Template Preview Large" class="block max-w-full max-h-full object-contain shadow-md">
+        </div>
+    </div>
 </div>
+
+{% endblock %}
+
+
+{% block body_end_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const viewButtons = document.querySelectorAll('.view-button'); // Buttons specifically
+        const imageTriggers = document.querySelectorAll('.view-image-trigger'); // Image containers
+
+        function openModal(imgSrc) {
+            if (!imgSrc || !modal || !modalImage) {
+                console.warn("Cannot open modal: Missing image source or modal elements.");
+                return; // Don't open if no src or elements missing
+            }
+            modalImage.src = imgSrc;
+            modalImage.style.display = 'block'; // Ensure image is visible
+            modal.classList.remove('hidden');
+            // Add small delay for transition? Maybe not needed if just opacity
+            // requestAnimationFrame(() => {
+            //     modal.classList.add('opacity-100'); // For potential fade-in
+            // });
+        }
+
+        function closeModal() {
+             if (!modal) return;
+             modal.classList.add('hidden');
+             // modal.classList.remove('opacity-100'); // For potential fade-out
+             // Clear src after hiding to prevent flash of old image on next open
+             if(modalImage) {
+                 // Delay clearing src slightly to allow fade-out if used
+                 setTimeout(() => { modalImage.src = ""; }, 300);
+             }
+        }
+
+        // Add listeners to all "View Preview" buttons
+        viewButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const imgSrc = this.dataset.imgSrc;
+                openModal(imgSrc);
+            });
+        });
+
+        // Add listeners to the image containers as well
+         imageTriggers.forEach(trigger => {
+            trigger.addEventListener('click', function() {
+                const imgSrc = this.dataset.imgSrc;
+                 if (imgSrc) { // Only open if there's an image source
+                    openModal(imgSrc);
+                 }
+            });
+        });
+
+
+        // Listener for the close button ('X')
+        if (closeModalBtn) {
+            closeModalBtn.addEventListener('click', closeModal);
+        }
+
+        // Listener to close modal if clicked outside the content area (on the backdrop)
+        if (modal) {
+            modal.addEventListener('click', function(event) {
+                // Check if the click was directly on the modal backdrop itself
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+        }
+
+        // Listener to close modal with the Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+    });
+</script>
 {% endblock %}

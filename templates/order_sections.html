@@ -1,0 +1,119 @@
+<!-- templates/order_sections.html -->
+{% extends "base.html" %}
+
+{% block head_extra_styles %}
+<style>
+    .sortable-ghost { /* Class for the item being dragged */
+        opacity: 0.4;
+        background: #c0e0ff; /* Light blue background */
+        border: 1px dashed #0ea5e9; /* Sky-500 border */
+    }
+    .sortable-chosen { /* Class for the selected item */
+        /* Add visual cue if desired */
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .drag-handle { /* Style the drag handle icon */
+        cursor: move; /* fallback: grab */
+        cursor: -webkit-grab;
+        cursor: grab;
+        padding: 0 10px;
+        color: #9ca3af; /* gray-400 */
+        align-self: stretch; /* Make handle fill height */
+        display: flex;
+        align-items: center;
+        border-right: 1px solid #e5e7eb; /* gray-200 */
+        margin-right: 0.75rem; /* Tailwind mr-3 */
+    }
+    .drag-item:active .drag-handle {
+         cursor: -webkit-grabbing;
+         cursor: grabbing;
+    }
+    .drag-item {
+        /* Ensure items don't shrink */
+        flex-shrink: 0;
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white p-6 md:p-10 rounded-xl shadow-lg">
+    <h1 class="text-3xl font-bold text-center text-sky-700 mb-4">{{ title }}</h1>
+    <p class="text-center text-slate-600 mb-8">Drag and drop the sections below using the <span class="font-mono font-bold text-slate-500">☰</span> handle to set the order they will appear in your resume.</p>
+
+    <!-- Display flash messages inherited from base.html -->
+
+    <form id="orderForm" method="POST" action="{{ url_for('order_sections') }}">
+        <!-- Hidden input to store the final order -->
+        <input type="hidden" id="section_order" name="section_order" value="{{ sections|map(attribute=0)|join(',') }}">
+
+        <div id="sortable-list" class="space-y-3 mb-8 border border-slate-300 p-4 rounded-md bg-slate-50 min-h-[200px]">
+            {% if sections %}
+                {% for key, name in sections %}
+                <div class="drag-item flex items-center bg-white p-3 rounded-md border border-slate-200 shadow-sm cursor-default" data-id="{{ key }}">
+                    <span class="drag-handle text-xl" title="Drag to reorder">☰</span>
+                    <span class="flex-grow font-medium text-slate-700">{{ name }}</span>
+                    <!-- Optional: Add icon corresponding to section -->
+                    <!-- <span class="text-slate-400 ml-auto">🔑</span> -->
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-center text-slate-500 italic py-4">No sections available to order.</p>
+            {% endif %}
+        </div>
+
+        <div class="flex justify-between items-center mt-10">
+             <a href="{{ url_for('resume_form') }}"
+                class="px-5 py-2 text-sm font-medium text-slate-600 bg-slate-100 border border-slate-300 rounded-md hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 transition ease-in-out duration-150">
+                 ← Back to Edit Details
+             </a>
+            <button type="submit" class="px-6 py-3 bg-sky-600 text-white font-semibold rounded-md shadow-md hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                Confirm Order & Select Template →
+            </button>
+        </div>
+    </form>
+
+</div>
+{% endblock %}
+
+
+{% block body_end_scripts %}
+<!-- Include SortableJS library (CDN example) -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const sortableList = document.getElementById('sortable-list');
+    const orderForm = document.getElementById('orderForm');
+    const hiddenOrderInput = document.getElementById('section_order');
+
+    if (sortableList && orderForm && hiddenOrderInput) {
+        // Initialize SortableJS
+        const sortable = Sortable.create(sortableList, {
+            animation: 150, // ms, animation speed moving items when sorting
+            ghostClass: 'sortable-ghost', // Class name for the drop placeholder
+            chosenClass: 'sortable-chosen', // Class name for the chosen item
+            handle: '.drag-handle', // Restrict drag start to the handle element
+            onUpdate: function () { // Update hidden input whenever order changes
+                updateHiddenInput();
+            }
+        });
+
+        function updateHiddenInput() {
+             // Get the order of items based on their data-id attribute
+            const currentOrder = sortable.toArray(); // Gets the data-id attributes in order
+            hiddenOrderInput.value = currentOrder.join(',');
+            console.log("Order updated:", hiddenOrderInput.value); // For debugging
+        }
+
+        // Initial update in case the order loaded from template is different (though value is set server-side)
+        // updateHiddenInput(); // Usually not needed as initial value is set by Jinja
+
+        // Form submission already sends the hidden input value, no extra JS needed on submit itself.
+
+    } else {
+        console.error("Sortable list, form, or hidden input element not found!");
+    }
+});
+</script>
+{% endblock %}
