@@ -3,43 +3,71 @@ from flask import Flask, render_template, request, redirect, url_for, session, m
 import io
 import os
 import traceback
-from pdf_templates import classic_template, modern_template # Assuming modern_template is the one we are focusing on
+
+# Import the specific template files based on your project structure image
+# Assuming each template_X.py file contains a 'generate_pdf' function
+# You only need to import the templates you list in AVAILABLE_TEMPLATES
+# Let's import all shown in the image up to 20 for completeness in the AVAILABLE_TEMPLATES config
+from pdf_templates import (
+    template_1, template_2, template_3, template_4, template_5,
+    template_6, template_7, template_8, template_9, template_10,
+    template_11, template_12, template_14, template_15,
+    template_16, template_17, template_18, template_19, template_20
+)
+
 
 app = Flask(__name__)
 # IMPORTANT: Change this secret key for production!
 app.secret_key = os.urandom(24) # For session management and flash messages
 
 # --- Template Configuration ---
+# Update keys and generators to match the filenames template_X.py
 AVAILABLE_TEMPLATES = {
-    "template_1_classic": {
-        "name": "Template 1 (Classic)",
-        "generator": classic_template.generate_pdf, # MAKE SURE this function is updated for A4/Ordering
-        "preview_image": "images/classic_preview.png" # Ensure this image exists in static/images/
+    "template_1": {
+        "name": "Template 1",
+        "generator": template_1.generate_pdf, # Use generator from template_1.py
+        "preview_image": "images/classic_preview.png" # Keep preview image name
     },
-    "template_2_modern": {
-        "name": "Template 2 (Modern Design)",
-        "generator": modern_template.generate_pdf,   # Updated function below handles A4/Ordering
-        "preview_image": "images/modern_preview.png" # Ensure this image exists in static/images/
-    }, 
+    "template_2": {
+        "name": "Template 2",
+        "generator": template_2.generate_pdf,   # Use generator from template_2.py
+        "preview_image": "images/modern_preview.png" # Keep preview image name
+    },
     "template_3": {
-        "name": "Template 3 (Classic)",
-        "generator": classic_template.generate_pdf, # MAKE SURE this function is updated for A4/Ordering
-        "preview_image": "images/classic_preview.png" # Ensure this image exists in static/images/
+        "name": "Template 3",
+        "generator": template_3.generate_pdf,   # Use generator from template_2.py
+        "preview_image": "images/modern_preview.png" # Keep preview image name
     },
+     
     "template_4": {
-        "name": "Template 4 (Modern Design)",
-        "generator": modern_template.generate_pdf,   # Updated function below handles A4/Ordering
-        "preview_image": "images/modern_preview.png" # Ensure this image exists in static/images/
-    }, 
-        "template_5_professional": {
+        "name": "Template 4 (Alternative Modern)",
+        "generator": template_4.generate_pdf, # Use generator from template_4.py
+        "preview_image": "images/modern_preview.png" # Reusing preview
+    },
+    "template_5": {
         "name": "Template 5 (Professional)",
-        "generator": modern_template.generate_pdf, # Assuming 'modern_template' can handle the structure, otherwise change to professional_template.generate_pdf once you've adapted it
-        "preview_image": "images/professional_preview.png" # You'll need to create this preview image
-    }
-    # Add more templates here
+        "generator": template_5.generate_pdf, # Use generator from template_5.py
+        "preview_image": "images/professional_preview.png" # Keep preview image name
+    },
+    # Add placeholders for other templates shown in the image (6-20)
+    # You would need to add actual generator functions and preview images for these
+    # Assuming they also have a generate_pdf function in their respective files
+     "template_6": { "name": "Template 6", "generator": template_6.generate_pdf, "preview_image": "images/modern_preview.png" },
+     "template_7": { "name": "Template 7", "generator": template_7.generate_pdf, "preview_image": "images/modern_preview.png" },
+     "template_8": { "name": "Template 8", "generator": template_8.generate_pdf, "preview_image": "images/modern_preview.png" },
+     "template_9": { "name": "Template 9", "generator": template_9.generate_pdf, "preview_image": "images/modern_preview.png" },
+     "template_10": { "name": "Template 10", "generator": template_10.generate_pdf, "preview_image": "images/modern_preview.png" },
+     "template_11": { "name": "Template 11", "generator": template_11.generate_pdf, "preview_image": "images/modern_preview.png" },
+     "template_12": { "name": "Template 12", "generator": template_12.generate_pdf, "preview_image": "images/modern_preview.png" },
+     "template_14": { "name": "Template 14", "generator": template_14.generate_pdf, "preview_image": "images/modern_preview.png" },
+     "template_15": { "name": "Template 15", "generator": template_15.generate_pdf, "preview_image": "images/modern_preview.png" },
+     "template_16": { "name": "Template 16", "generator": template_16.generate_pdf, "preview_image": "images/modern_preview.png" },
+     "template_17": { "name": "Template 17", "generator": template_17.generate_pdf, "preview_image": "images/modern_preview.png" },
+     "template_18": { "name": "Template 18", "generator": template_18.generate_pdf, "preview_image": "images/modern_preview.png" },
+     "template_19": { "name": "Template 19", "generator": template_19.generate_pdf, "preview_image": "images/modern_preview.png" },
+     "template_20": { "name": "Template 20", "generator": template_20.generate_pdf, "preview_image": "images/modern_preview.png" },
 }
 
-    # Add more templates here
 
 # --- Default Data & Structure ---
 SAMPLE_RESUME_DATA = {
@@ -321,4 +349,5 @@ def download_resume(template_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000) # Make sure port is accessible if using Docker/VM
+    # Make sure this is set correctly for deployment environments
+    app.run(debug=True, host='0.0.0.0', port=5000)

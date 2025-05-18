@@ -1,13 +1,13 @@
 import io
-from reportlab.lib.pagesizes import A4
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable, Frame, PageTemplate
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
-from reportlab.lib.colors import HexColor, gray
+from reportlab.lib.colors import HexColor, black, gray
 
 def generate_pdf(data):
     buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4,
+    doc = SimpleDocTemplate(buffer, pagesize=letter,
                             rightMargin=0.75*inch, leftMargin=0.75*inch,
                             topMargin=0.75*inch, bottomMargin=0.75*inch)
 
@@ -18,14 +18,14 @@ def generate_pdf(data):
                               fontName='Helvetica-Bold',
                               fontSize=24,
                               leading=28,
-                              alignment=0, # Left
+                              alignment=1, # Center
                               spaceAfter=0.1*inch))
 
     styles.add(ParagraphStyle(name='ContactHeader',
                               fontName='Helvetica',
                               fontSize=10,
                               leading=12,
-                              alignment=0, # Left
+                              alignment=1, # Center
                               spaceAfter=0.2*inch))
 
     styles.add(ParagraphStyle(name='SectionTitle',
@@ -59,58 +59,50 @@ def generate_pdf(data):
                               parent=styles['Normal'],
                               leftIndent=0.25*inch))
 
-    styles.add(ParagraphStyle(name='Justified',
-                              parent=styles['Normal'],
-                              alignment=4))  # 4 for justified
-
     story = []
 
-    # Define a two-column layout
-    def two_column_layout(canvas, doc):
-        canvas.saveState()
-        # Draw a vertical line to separate columns
-        canvas.setStrokeColor(gray)
-        canvas.setLineWidth(0.5)
-        # Adjust the y-coordinates to match the column height
-        canvas.line(A4[0]/2, doc.bottomMargin, A4[0]/2, A4[1] - doc.topMargin - 1.5*inch)
-        canvas.restoreState()
-
-    # Create a frame for the header
-    frame_header = Frame(doc.leftMargin, doc.bottomMargin + (A4[1] - doc.topMargin - doc.bottomMargin - 1.5*inch),
-                         A4[0] - doc.leftMargin - doc.rightMargin, 1.5*inch,
-                         id='header')
-
-    # Create a frame for the first column
-    frame1 = Frame(doc.leftMargin, doc.bottomMargin, A4[0]/2 - doc.leftMargin - doc.rightMargin/2, A4[1] - doc.topMargin - doc.bottomMargin - 1.5*inch,
-                   id='col1')
-
-    # Create a frame for the second column
-    frame2 = Frame(A4[0]/2 + doc.rightMargin/2, doc.bottomMargin, A4[0]/2 - doc.leftMargin - doc.rightMargin/2, A4[1] - doc.topMargin - doc.bottomMargin - 1.5*inch,
-                   id='col2')
-
-    # Create a page template with header and two columns
-    page_template = PageTemplate(id='TwoColumns', frames=[frame_header, frame1, frame2], onPage=two_column_layout)
-    doc.addPageTemplates([page_template])
-
-    # --- Personal Details in Header ---
+    # --- Personal Details ---
     if data.get('full_name'):
         story.append(Paragraph(data['full_name'].upper(), styles['NameHeader']))
 
     contact_info = []
-    if data.get('email'): contact_info.append(data['email'])
-    if data.get('phone'): contact_info.append(data['phone'])
+    if data.get('email'): contact_info.append(f"Email: {data['email']}")
+    if data.get('phone'): contact_info.append(f"Phone: {data['phone']}")
     if data.get('linkedin'): contact_info.append(f"LinkedIn: {data['linkedin']}")
     if data.get('github'): contact_info.append(f"GitHub: {data['github']}")
     if contact_info:
         story.append(Paragraph(" | ".join(contact_info), styles['ContactHeader']))
+
+    # --- Additional Personal Information ---
+    personal_info = []
+    if data.get('birth_date'): personal_info.append(f"Date of Birth: {data['birth_date']}")
+    if data.get('nationality'): personal_info.append(f"Nationality: {data['nationality']}")
+    if data.get('gender'): personal_info.append(f"Gender: {data['gender']}")
+    if data.get('location'): personal_info.append(f"Location: {data['location']}")
+    if personal_info:
+        story.append(Paragraph("Personal Information", styles['SectionTitle']))
+        for info in personal_info:
+            story.append(Paragraph(info, styles['Normal']))
+        story.append(Spacer(1, 0.1*inch))
 
     story.append(HRFlowable(width="100%", thickness=0.5, color=gray, spaceBefore=0.1*inch, spaceAfter=0.1*inch))
 
     # --- Summary ---
     if data.get('summary'):
         story.append(Paragraph("Summary", styles['SectionTitle']))
-        story.append(Paragraph(data['summary'], styles['Justified']))
+        story.append(Paragraph(data['summary'], styles['Normal']))
         story.append(Spacer(1, 0.1*inch))
+
+    # --- Key Achievements ---
+    key_achievements = data.get('key_achievements', [])
+    if key_achievements:
+        story.append(Paragraph("Key Achievements", styles['SectionTitle']))
+        for achievement in key_achievements:
+            if achievement.get('title'):
+                story.append(Paragraph(achievement['title'], styles['JobTitle']))
+                if achievement.get('description'):
+                    story.append(Paragraph(achievement['description'], styles['NormalIndented']))
+                story.append(Spacer(1, 0.1*inch))
 
     # --- Professional Experience ---
     experiences = data.get('experiences', [])
@@ -121,14 +113,13 @@ def generate_pdf(data):
                 story.append(Paragraph(exp['title'], styles['JobTitle']))
                 story.append(Paragraph(f"{exp['company']} | {exp.get('dates', 'N/A')}", styles['CompanyDate']))
                 if exp.get('description'):
-                    # Basic handling for bullet points (assuming user types '-' or similar)
                     desc_lines = exp['description'].split('\n')
                     for line in desc_lines:
                         line = line.strip()
                         if line.startswith(('-', '*', '•')):
                             story.append(Paragraph(line, styles['BulletPoint'], bulletText=line[0]))
                         elif line:
-                             story.append(Paragraph(line, styles['Justified']))
+                            story.append(Paragraph(line, styles['NormalIndented']))
                 story.append(Spacer(1, 0.15*inch))
 
     # --- Education ---
@@ -140,55 +131,67 @@ def generate_pdf(data):
                 story.append(Paragraph(edu['degree'], styles['JobTitle']))
                 story.append(Paragraph(f"{edu['institution']} | {edu.get('edu_dates', 'N/A')}", styles['CompanyDate']))
                 if edu.get('edu_details'):
-                    story.append(Paragraph(edu['edu_details'], styles['Justified']))
+                    story.append(Paragraph(edu['edu_details'], styles['NormalIndented']))
+                story.append(Spacer(1, 0.1*inch))
+
+    # --- Courses ---
+    courses = data.get('courses', [])
+    if courses:
+        story.append(Paragraph("Courses/Certifications", styles['SectionTitle']))
+        for course in courses:
+            if course.get('title'):
+                story.append(Paragraph(course['title'], styles['JobTitle']))
+                if course.get('description'):
+                    story.append(Paragraph(course['description'], styles['NormalIndented']))
+                story.append(Spacer(1, 0.1*inch))
+
+    # --- Languages ---
+    languages = data.get('languages', [])
+    if languages:
+        story.append(Paragraph("Languages", styles['SectionTitle']))
+        for lang in languages:
+            if lang.get('name'):
+                story.append(Paragraph(lang['name'], styles['JobTitle']))
+                story.append(Paragraph(f"Conversation: {lang.get('level', 'N/A')}, Reading: {lang.get('reading', 'N/A')}, Writing: {lang.get('writing', 'N/A')}", styles['NormalIndented']))
+                story.append(Spacer(1, 0.1*inch))
+
+    # --- Additional Information ---
+    additional_info = data.get('additional_info', [])
+    if additional_info:
+        story.append(Paragraph("Additional Information", styles['SectionTitle']))
+        for info in additional_info:
+            if info.get('title'):
+                story.append(Paragraph(info['title'], styles['JobTitle']))
+                if info.get('description'):
+                    story.append(Paragraph(info['description'], styles['NormalIndented']))
+                story.append(Spacer(1, 0.1*inch))
+
+    # --- References ---
+    references = data.get('references', [])
+    if references:
+        story.append(Paragraph("References", styles['SectionTitle']))
+        for ref in references:
+            if ref.get('name'):
+                story.append(Paragraph(ref['name'], styles['JobTitle']))
+                story.append(Paragraph(f"{ref.get('title', 'N/A')}", styles['CompanyDate']))
+                if ref.get('phone'):
+                    story.append(Paragraph(f"Phone: {ref['phone']}", styles['NormalIndented']))
+                if ref.get('description'):
+                    story.append(Paragraph(ref['description'], styles['NormalIndented']))
                 story.append(Spacer(1, 0.1*inch))
 
     # --- Skills ---
     if data.get('skills'):
         story.append(Paragraph("Skills", styles['SectionTitle']))
-        story.append(Paragraph(data['skills'], styles['Justified'])) # Assuming comma-separated
+        story.append(Paragraph(data['skills'], styles['Normal'])) # Assuming comma-separated
         story.append(Spacer(1, 0.1*inch))
 
     # --- Hobbies ---
     if data.get('hobbies'):
         story.append(Paragraph("Hobbies", styles['SectionTitle']))
-        story.append(Paragraph(data['hobbies'], styles['Justified']))
+        story.append(Paragraph(data['hobbies'], styles['Normal']))
         story.append(Spacer(1, 0.1*inch))
 
     doc.build(story)
     buffer.seek(0)
     return buffer
-
-# Example usage
-data = {
-    'full_name': 'Ellen Johnson',
-    'email': 'help@enhancv.com',
-    'linkedin': 'linkedin.com',
-    'summary': 'Motivated Digital Marketing Manager with over 3 years of experience in driving user acquisition and growth through strategic paid campaigns. Expert in data analysis, creative optimization, and cross-functional collaboration to achieve business objectives. Proven track record of scaling campaigns and enhancing ROI.',
-    'experiences': [
-        {
-            'title': 'Senior Digital Marketing Specialist',
-            'company': 'Tech Innovate',
-            'dates': '01/2022 - Present',
-            'description': '- Led the development and execution of comprehensive digital marketing campaigns across Meta, Google, and TikTok, increasing user acquisition by 45% within 12 months.\n- Managed a $500K quarterly budget for paid acquisition channels, optimizing spend for a 30% improvement in ROAS.\n- Implemented advanced targeting and retargeting strategies that reduced CPA by 20%, while increasing conversion rates by 15%.'
-        },
-        # Add more experiences as needed
-    ],
-    'education_entries': [
-        {
-            'degree': 'Master of Science in Marketing Analytics',
-            'institution': 'University of California, Berkeley',
-            'edu_dates': '01/2015 - 01/2017',
-            'edu_details': 'Relevant coursework in strategic finance and operations management.'
-        },
-        # Add more education entries as needed
-    ],
-    'skills': 'Data Analysis, Paid Acquisition, Retargeting, ROAS Optimization, Cross-Functional Collaboration, Google Analytics, Looker, Appsflyer, Meta Advertising, Google Ads, TikTok Ads, Snapchat Ads, SQL',
-    'hobbies': 'Reading, Hiking, Photography'
-}
-
-pdf_buffer = generate_pdf(data)
-
-# Save the PDF to a file
-with open('resume.pdf', 'wb') as f:
-    f.write(pdf_buffer.read())

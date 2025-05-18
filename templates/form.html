@@ -1,4 +1,3 @@
-<!-- templates/form.html -->
 {% extends "base.html" %}
 
 {% block head_extra_styles %}
@@ -8,130 +7,169 @@
 {% block content %}
 <div class="max-w-3xl mx-auto bg-white p-6 md:p-10 rounded-xl shadow-lg">
     <h1 class="text-3xl font-bold text-center text-sky-700 mb-8">{{ title }}</h1>
-    <p class="text-center text-slate-500 text-sm mb-6">Fill in your details below. You can add multiple experiences and education entries.</p>
+    <p class="text-center text-slate-500 text-sm mb-6">Preencha seus detalhes abaixo. Você pode adicionar múltiplas experiências e entradas de educação.</p>
     <form method="POST" action="{{ url_for('resume_form') }}" class="space-y-8">
 
         <!-- Personal Details Section -->
         <fieldset class="border border-slate-300 p-6 rounded-md">
-            <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Personal Details</legend>
+            <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Detalhes Pessoais</legend>
             <div class="space-y-4">
                 <div>
-                    <label for="full_name" class="block text-sm font-medium text-slate-700 mb-1">Full Name:</label>
-                    <input type="text" id="full_name" name="full_name" required value="{{ data.full_name | default('', true) }}" class="form-input-base">
+                    <label for="full_name" class="block text-sm font-medium text-slate-700 mb-1">Primeiro Nome:</label>
+                    <input type="text" id="full_name" name="full_name" required value="{{ data.full_name | default('João', true) }}" class="form-input-base">
                 </div>
                 <div>
-                    <label for="title_subtitle" class="block text-sm font-medium text-slate-700 mb-1">Title/Subtitle (under name):</label>
-                    <input type="text" id="title_subtitle" name="title_subtitle" value="{{ data.title_subtitle | default('', true) }}" class="form-input-base">
+                    <label for="title_subtitle" class="block text-sm font-medium text-slate-700 mb-1">Cargo que está se candidatando:</label>
+                    <input type="text" id="title_subtitle" name="title_subtitle" value="{{ data.title_subtitle | default('Desenvolvedor Web Sênior', true) }}" class="form-input-base">
                 </div>
                 <div>
                     <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email:</label>
-                    <input type="email" id="email" name="email" required value="{{ data.email | default('', true) }}" class="form-input-base">
+                    <input type="email" id="email" name="email" required value="{{ data.email | default('joao.silva@email.com', true) }}" class="form-input-base">
                 </div>
                 <div>
-                    <label for="phone" class="block text-sm font-medium text-slate-700 mb-1">Phone:</label>
-                    <input type="tel" id="phone" name="phone" value="{{ data.phone | default('', true) }}" class="form-input-base">
-                </div>
-                 <div>
-                    <label for="linkedin" class="block text-sm font-medium text-slate-700 mb-1">LinkedIn Profile URL (optional):</label>
-                    <input type="text" id="linkedin" name="linkedin" value="{{ data.linkedin | default('', true) }}" placeholder="e.g., linkedin.com/in/yourname" class="form-input-base">
+                    <label for="phone" class="block text-sm font-medium text-slate-700 mb-1">Telefone:</label>
+                    <input type="tel" id="phone" name="phone" value="{{ data.phone | default('+351 912 345 678', true) }}" class="form-input-base">
                 </div>
                 <div>
-                    <label for="location" class="block text-sm font-medium text-slate-700 mb-1">Location (City, State):</label>
-                    <input type="text" id="location" name="location" value="{{ data.location | default('', true) }}" placeholder="e.g., New York, NY" class="form-input-base">
+                    <label for="linkedin" class="block text-sm font-medium text-slate-700 mb-1">LinkedIn/Portfólio:</label>
+                    <input type="text" id="linkedin" name="linkedin" value="{{ data.linkedin | default('linkedin.com/in/joaosilvadev', true) }}" class="form-input-base">
                 </div>
                 <div>
-                    <label for="summary" class="block text-sm font-medium text-slate-700 mb-1">Professional Summary:</label>
-                    <textarea id="summary" name="summary" rows="4" required class="form-textarea-base min-h-[80px]">{{ data.summary | default('', true) }}</textarea>
+                    <label for="location" class="block text-sm font-medium text-slate-700 mb-1">Local de Nascimento:</label>
+                    <input type="text" id="location" name="location" value="{{ data.location | default('Porto, Portugal', true) }}" class="form-input-base">
+                </div>
+                <div>
+                    <label for="nationality" class="block text-sm font-medium text-slate-700 mb-1">Nacionalidade:</label>
+                    <select id="nationality" name="nationality" class="form-input-base">
+                        <option value="Moçambicana" {% if data.nationality == 'Moçambicana' %}selected{% endif %}>Moçambicana</option>
+                        <option value="Portuguesa" {% if data.nationality == 'Portuguesa' %}selected{% endif %}>Portuguesa</option>
+                        <option value="Brasileira" {% if data.nationality == 'Brasileira' %}selected{% endif %}>Brasileira</option>
+                        <option value="Angolana" {% if data.nationality == 'Angolana' %}selected{% endif %}>Angolana</option>
+                        <option value="Americana" {% if data.nationality == 'Americana' %}selected{% endif %}>Americana</option>
+                        <!-- Add more nationalities as needed -->
+                    </select>
+                </div>
+                <div>
+                    <label for="birth_date" class="block text-sm font-medium text-slate-700 mb-1">Data de Nascimento:</label>
+                    <input type="date" id="birth_date" name="birth_date" value="{{ data.birth_date | default('1990-05-15', true) }}" class="form-input-base">
+                </div>
+                <div>
+                    <label for="gender" class="block text-sm font-medium text-slate-700 mb-1">Gênero:</label>
+                    <select id="gender" name="gender" class="form-input-base">
+                        <option value="Masculino" {% if data.gender == 'Masculino' %}selected{% endif %}>Masculino</option>
+                        <option value="Feminino" {% if data.gender == 'Feminino' %}selected{% endif %}>Feminino</option>
+                        <option value="Outro" {% if data.gender == 'Outro' %}selected{% endif %}>Outro</option>
+                        <option value="Prefiro não dizer" {% if data.gender == 'Prefiro não dizer' %}selected{% endif %}>Prefiro não dizer</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="summary" class="block text-sm font-medium text-slate-700 mb-1">Resumo Profissional:</label>
+                    <textarea id="summary" name="summary" rows="4" required class="form-textarea-base min-h-[80px]">{{ data.summary | default('Motivated Digital Marketing Manager with over 3 years of experience in driving user acquisition and growth through strategic paid campaigns.', true) }}</textarea>
                 </div>
                 <!-- NOTE: Profile Image upload is not implemented here, using default/sample -->
                 <input type="hidden" name="profile_image_path" value="{{ data.profile_image_path | default('', true) }}">
                 {% if data.profile_image_path %}
                  <p class="text-xs text-slate-500 mt-1">Current profile image path: {{ data.profile_image_path }} (Feature to upload not added yet).</p>
                 {% endif %}
-
             </div>
         </fieldset>
 
         <!-- Key Achievements -->
         <fieldset class="border border-slate-300 p-6 rounded-md">
-            <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Key Achievements (Optional, Max 3)</legend>
-            <div class="space-y-4">
+            <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Principais Conquistas (Opcional, Máx 3)</legend>
+            <div id="achievements-container" class="space-y-4">
               {% for i in range(1, 4) %}
               {% set ach = data.key_achievements[loop.index0] if data.key_achievements and loop.index0 < data.key_achievements|length else {} %}
-              <div class="p-3 border border-slate-200 rounded-md bg-slate-50">
-                  <h4 class="text-md font-medium text-slate-600 mb-2">Achievement {{i}}</h4>
+              <div class="achievement-block p-3 border border-slate-200 rounded-md bg-slate-50 relative">
+                  <button type="button" onclick="removeBlock(this, 'achievement-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Conquista">×</button>
+                  <h4 class="text-md font-medium text-slate-600 mb-2">Conquista {{i}}</h4>
                   <div>
-                      <label for="ach_title_{{i}}" class="block text-sm font-medium text-slate-700 mb-1">Title:</label>
+                      <label for="ach_title_{{i}}" class="block text-sm font-medium text-slate-700 mb-1">Título:</label>
                       <input type="text" id="ach_title_{{i}}" name="ach_title_{{i}}" value="{{ ach.title | default('', true) }}" class="form-input-base">
                   </div>
                   <div class="mt-3">
-                      <label for="ach_description_{{i}}" class="block text-sm font-medium text-slate-700 mb-1">Description:</label>
+                      <label for="ach_description_{{i}}" class="block text-sm font-medium text-slate-700 mb-1">Descrição:</label>
                       <textarea id="ach_description_{{i}}" name="ach_description_{{i}}" rows="2" class="form-textarea-base min-h-[60px]">{{ ach.description | default('', true) }}</textarea>
                   </div>
               </div>
               {% endfor %}
             </div>
+            <button type="button" id="add-achievement-btn" class="mt-6 px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                + Adicionar Conquista
+            </button>
         </fieldset>
 
         <!-- Courses -->
         <fieldset class="border border-slate-300 p-6 rounded-md">
-            <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Courses/Certifications (Optional, Max 2)</legend>
-             <div class="space-y-4">
+            <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Cursos/Certificações (Opcional, Máx 2)</legend>
+             <div id="courses-container" class="space-y-4">
                 {% for i in range(1, 3) %}
                 {% set course = data.courses[loop.index0] if data.courses and loop.index0 < data.courses|length else {} %}
-                <div class="p-3 border border-slate-200 rounded-md bg-slate-50">
-                     <h4 class="text-md font-medium text-slate-600 mb-2">Course/Cert {{i}}</h4>
+                <div class="course-block p-3 border border-slate-200 rounded-md bg-slate-50 relative">
+                    <button type="button" onclick="removeBlock(this, 'course-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Curso">×</button>
+                     <h4 class="text-md font-medium text-slate-600 mb-2">Curso/Cert {{i}}</h4>
                     <div>
-                        <label for="course_title_{{i}}" class="block text-sm font-medium text-slate-700 mb-1">Course/Certificate Title:</label>
+                        <label for="course_title_{{i}}" class="block text-sm font-medium text-slate-700 mb-1">Título do Curso/Certificado:</label>
                         <input type="text" id="course_title_{{i}}" name="course_title_{{i}}" value="{{ course.title | default('', true) }}" class="form-input-base">
                     </div>
                     <div class="mt-3">
-                        <label for="course_description_{{i}}" class="block text-sm font-medium text-slate-700 mb-1">Description/Institution:</label>
+                        <label for="course_description_{{i}}" class="block text-sm font-medium text-slate-700 mb-1">Descrição/Instituição:</label>
                         <textarea id="course_description_{{i}}" name="course_description_{{i}}" rows="2" class="form-textarea-base min-h-[60px]">{{ course.description | default('', true) }}</textarea>
                     </div>
                 </div>
                 {% endfor %}
              </div>
+             <button type="button" id="add-course-btn" class="mt-6 px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                + Adicionar Curso
+            </button>
         </fieldset>
 
         <!-- Professional Experience Section -->
         <fieldset class="border border-slate-300 p-6 rounded-md">
-            <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Professional Experience</legend>
+            <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Experiência</legend>
             <div id="experiences-container" class="space-y-6">
                 {% for exp in data.experiences %}
                 <div class="experience-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
-                    <button type="button" onclick="removeBlock(this, 'experience-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remove Experience">×</button>
-                    <h3 class="text-lg font-medium text-slate-700 mb-3">Experience <span class="item-number">{{ loop.index }}</span></h3>
+                    <button type="button" onclick="removeBlock(this, 'experience-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Experiência">×</button>
+                    <h3 class="text-lg font-medium text-slate-700 mb-3">Experiência <span class="item-number">{{ loop.index }}</span></h3>
                     <div class="space-y-4">
                         <div>
-                            <label for="exp_title_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Job Title:</label>
-                            <input type="text" id="exp_title_{{loop.index0}}" name="exp_title[{{loop.index0}}]" value="{{ exp.title | default('', true) }}" class="form-input-base" required>
+                            <label for="exp_title_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Nome da Empresa:</label>
+                            <input type="text" id="exp_title_{{loop.index0}}" name="exp_title[{{loop.index0}}]" value="{{ exp.title | default('Tech Solutions Lda', true) }}" class="form-input-base" required>
                         </div>
                         <div>
-                            <label for="exp_company_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Company:</label>
-                            <input type="text" id="exp_company_{{loop.index0}}" name="exp_company[{{loop.index0}}]" value="{{ exp.company | default('', true) }}" class="form-input-base">
+                            <label for="exp_company_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Cargo:</label>
+                            <input type="text" id="exp_company_{{loop.index0}}" name="exp_company[{{loop.index0}}]" value="{{ exp.company | default('Desenvolvedor Web Sênior', true) }}" class="form-input-base">
                         </div>
                         <div>
-                            <label for="exp_location_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Location (City, State):</label>
+                            <label for="exp_location_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Localização:</label>
                             <input type="text" id="exp_location_{{loop.index0}}" name="exp_location[{{loop.index0}}]" value="{{ exp.location | default('', true) }}" class="form-input-base">
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                             <div>
-                                <label for="exp_start_date_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Start Date:</label>
-                                <input type="month" id="exp_start_date_{{loop.index0}}" name="exp_start_date[{{loop.index0}}]" value="{{ exp.start_date | default('', true) }}" class="form-input-base">
+                                <label for="exp_start_date_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Data de Início:</label>
+                                <input type="month" id="exp_start_date_{{loop.index0}}" name="exp_start_date[{{loop.index0}}]" value="{{ exp.start_date | default('2018-03', true) }}" class="form-input-base">
                             </div>
                             <div>
-                                <label for="exp_end_date_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">End Date:</label>
+                                <label for="exp_end_date_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Data de Término:</label>
                                 <input type="month" id="exp_end_date_{{loop.index0}}" name="exp_end_date[{{loop.index0}}]" value="{{ exp.end_date | default('', true) }}" class="form-input-base" {% if exp.is_present %}disabled{% endif %}>
                             </div>
                             <div class="flex items-center mb-1 pt-6 md:pt-0 md:self-center"> <!-- Adjusted alignment -->
                                 <input type="checkbox" id="exp_present_{{loop.index0}}" name="exp_present[{{loop.index0}}]" class="form-checkbox-base h-5 w-5 text-sky-600 focus:ring-sky-500" onchange="toggleEndDate(this, 'exp_end_date_{{loop.index0}}')" {% if exp.is_present %}checked{% endif %}>
-                                <label for="exp_present_{{loop.index0}}" class="ml-2 text-sm text-slate-700">I currently work here</label>
+                                <label for="exp_present_{{loop.index0}}" class="ml-2 text-sm text-slate-700">Atualmente trabalho aqui</label>
                             </div>
                         </div>
                         <div>
-                            <label for="exp_description_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Description (one point per line):</label>
-                            <textarea id="exp_description_{{loop.index0}}" name="exp_description[{{loop.index0}}]" rows="5" class="form-textarea-base min-h-[100px]" placeholder="- Achieved X by doing Y...">{{ exp.description | default('', true) }}</textarea>
+                            <label for="exp_description_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Descrição da Empresa:</label>
+                            <textarea id="exp_description_{{loop.index0}}" name="exp_description[{{loop.index0}}]" rows="5" class="form-textarea-base min-h-[100px]" placeholder="- Liderou o desenvolvimento...">{{ exp.description | default('Empresa líder em desenvolvimento de software personalizado para o setor financeiro.', true) }}</textarea>
+                        </div>
+                        <div>
+                            <label for="exp_achievements_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Principais Conquistas:</label>
+                            <textarea id="exp_achievements_{{loop.index0}}" name="exp_achievements[{{loop.index0}}]" rows="5" class="form-textarea-base min-h-[100px]" placeholder="- Liderou o desenvolvimento...">{{ exp.achievements | default('Liderou o desenvolvimento de um novo portal do cliente, resultando em um aumento de 25% na satisfação do cliente.', true) }}</textarea>
+                        </div>
+                        <div>
+                            <label for="exp_responsibilities_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Principais Responsabilidades:</label>
+                            <textarea id="exp_responsibilities_{{loop.index0}}" name="exp_responsibilities[{{loop.index0}}]" rows="5" class="form-textarea-base min-h-[100px]" placeholder="- Desenvolvimento e manutenção...">{{ exp.responsibilities | default('Desenvolvimento e manutenção de aplicações web usando Laravel e Vue.js', true) }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -141,47 +179,47 @@
                 {% endfor %}
             </div>
             <button type="button" id="add-experience-btn" class="mt-6 px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                + Add Experience
+                + Adicionar Experiência
             </button>
         </fieldset>
 
         <!-- Education Section -->
         <fieldset class="border border-slate-300 p-6 rounded-md">
-            <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Education</legend>
+            <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Educação</legend>
             <div id="education-container" class="space-y-6">
                 {% for edu in data.education_entries %}
                 <div class="education-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
-                    <button type="button" onclick="removeBlock(this, 'education-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remove Education">×</button>
-                    <h3 class="text-lg font-medium text-slate-700 mb-3">Education <span class="item-number">{{ loop.index }}</span></h3>
+                    <button type="button" onclick="removeBlock(this, 'education-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Educação">×</button>
+                    <h3 class="text-lg font-medium text-slate-700 mb-3">Educação <span class="item-number">{{ loop.index }}</span></h3>
                     <div class="space-y-4">
                         <div>
-                            <label for="edu_degree_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Degree/Certificate:</label>
-                            <input type="text" id="edu_degree_{{loop.index0}}" name="edu_degree[{{loop.index0}}]" value="{{ edu.degree | default('', true) }}" class="form-input-base" required>
+                            <label for="edu_degree_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Escola/Universidade:</label>
+                            <input type="text" id="edu_degree_{{loop.index0}}" name="edu_degree[{{loop.index0}}]" value="{{ edu.degree | default('Universidade do Porto', true) }}" class="form-input-base" required>
                         </div>
                         <div>
-                            <label for="edu_institution_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Institution:</label>
-                            <input type="text" id="edu_institution_{{loop.index0}}" name="edu_institution[{{loop.index0}}]" value="{{ edu.institution | default('', true) }}" class="form-input-base">
+                            <label for="edu_institution_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Grau e Área de Estudo:</label>
+                            <input type="text" id="edu_institution_{{loop.index0}}" name="edu_institution[{{loop.index0}}]" value="{{ edu.institution | default('Licenciatura em Engenharia Informática', true) }}" class="form-input-base">
                         </div>
                         <div>
-                            <label for="edu_location_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Location (City, State):</label>
-                            <input type="text" id="edu_location_{{loop.index0}}" name="edu_location[{{loop.index0}}]" value="{{ edu.edu_location | default('', true) }}" class="form-input-base">
+                            <label for="edu_location_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Ano de Conclusão:</label>
+                            <input type="text" id="edu_location_{{loop.index0}}" name="edu_location[{{loop.index0}}]" value="{{ edu.edu_location | default('2015', true) }}" class="form-input-base">
                         </div>
-                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                             <div>
-                                <label for="edu_start_date_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Start Date:</label>
+                                <label for="edu_start_date_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Data de Início:</label>
                                 <input type="month" id="edu_start_date_{{loop.index0}}" name="edu_start_date[{{loop.index0}}]" value="{{ edu.start_date | default('', true) }}" class="form-input-base">
                             </div>
                             <div>
-                                <label for="edu_end_date_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">End Date:</label>
+                                <label for="edu_end_date_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Data de Término:</label>
                                 <input type="month" id="edu_end_date_{{loop.index0}}" name="edu_end_date[{{loop.index0}}]" value="{{ edu.end_date | default('', true) }}" class="form-input-base" {% if edu.is_present %}disabled{% endif %}>
                             </div>
                             <div class="flex items-center mb-1 pt-6 md:pt-0 md:self-center"> <!-- Adjusted alignment -->
                                 <input type="checkbox" id="edu_present_{{loop.index0}}" name="edu_present[{{loop.index0}}]" class="form-checkbox-base h-5 w-5 text-sky-600 focus:ring-sky-500" onchange="toggleEndDate(this, 'edu_end_date_{{loop.index0}}')" {% if edu.is_present %}checked{% endif %}>
-                                <label for="edu_present_{{loop.index0}}" class="ml-2 text-sm text-slate-700">Currently enrolled</label>
+                                <label for="edu_present_{{loop.index0}}" class="ml-2 text-sm text-slate-700">Atualmente matriculado</label>
                             </div>
                         </div>
                         <div>
-                            <label for="edu_details_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Details (e.g., GPA, Honors, Relevant Coursework):</label>
+                            <label for="edu_details_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Detalhes (e.g., GPA, Honors, Relevant Coursework):</label>
                             <textarea id="edu_details_{{loop.index0}}" name="edu_details[{{loop.index0}}]" rows="3" class="form-textarea-base min-h-[80px]">{{ edu.edu_details | default('', true) }}</textarea>
                         </div>
                     </div>
@@ -191,53 +229,226 @@
                 {% endfor %}
             </div>
             <button type="button" id="add-education-btn" class="mt-6 px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                + Add Education
+                + Adicionar Educação
             </button>
+        </fieldset>
+
+        <!-- Languages Section -->
+        <fieldset class="border border-slate-300 p-6 rounded-md">
+            <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Idiomas</legend>
+            <div id="languages-container" class="space-y-6">
+                {% for lang in data.languages %}
+                <div class="language-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
+                    <button type="button" onclick="removeBlock(this, 'language-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Idioma">×</button>
+                    <h3 class="text-lg font-medium text-slate-700 mb-3">Idioma <span class="item-number">{{ loop.index }}</span></h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="lang_name_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Idioma:</label>
+                            <select id="lang_name_{{loop.index0}}" name="lang_name[{{loop.index0}}]" class="form-input-base">
+                                <option value="Português" {% if lang.name == 'Português' %}selected{% endif %}>Português</option>
+                                <option value="Inglês" {% if lang.name == 'Inglês' %}selected{% endif %}>Inglês</option>
+                                <option value="Espanhol" {% if lang.name == 'Espanhol' %}selected{% endif %}>Espanhol</option>
+                                <option value="Francês" {% if lang.name == 'Francês' %}selected{% endif %}>Francês</option>
+                                <option value="Alemão" {% if lang.name == 'Alemão' %}selected{% endif %}>Alemão</option>
+                                <!-- Add more languages as needed -->
+                            </select>
+                        </div>
+                        <div>
+                            <label for="lang_level_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Nível de Conversação:</label>
+                            <select id="lang_level_{{loop.index0}}" name="lang_level[{{loop.index0}}]" class="form-input-base">
+                                <option value="Fluente" {% if lang.level == 'Fluente' %}selected{% endif %}>Fluente</option>
+                                <option value="Avançado" {% if lang.level == 'Avançado' %}selected{% endif %}>Avançado</option>
+                                <option value="Intermediário" {% if lang.level == 'Intermediário' %}selected{% endif %}>Intermediário</option>
+                                <option value="Básico" {% if lang.level == 'Básico' %}selected{% endif %}>Básico</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="lang_reading_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Nível de Leitura:</label>
+                            <select id="lang_reading_{{loop.index0}}" name="lang_reading[{{loop.index0}}]" class="form-input-base">
+                                <option value="Fluente" {% if lang.reading == 'Fluente' %}selected{% endif %}>Fluente</option>
+                                <option value="Avançado" {% if lang.reading == 'Avançado' %}selected{% endif %}>Avançado</option>
+                                <option value="Intermediário" {% if lang.reading == 'Intermediário' %}selected{% endif %}>Intermediário</option>
+                                <option value="Básico" {% if lang.reading == 'Básico' %}selected{% endif %}>Básico</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="lang_writing_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Nível de Escrita:</label>
+                            <select id="lang_writing_{{loop.index0}}" name="lang_writing[{{loop.index0}}]" class="form-input-base">
+                                <option value="Fluente" {% if lang.writing == 'Fluente' %}selected{% endif %}>Fluente</option>
+                                <option value="Avançado" {% if lang.writing == 'Avançado' %}selected{% endif %}>Avançado</option>
+                                <option value="Intermediário" {% if lang.writing == 'Intermediário' %}selected{% endif %}>Intermediário</option>
+                                <option value="Básico" {% if lang.writing == 'Básico' %}selected{% endif %}>Básico</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                 {# <p class="text-slate-500 italic">No languages added yet.</p> #}
+                {% endfor %}
+            </div>
+            <button type="button" id="add-language-btn" class="mt-6 px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                + Adicionar Idioma
+            </button>
+        </fieldset>
+
+        <!-- Additional Information Section -->
+        <fieldset class="border border-slate-300 p-6 rounded-md">
+            <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Informações Adicionais</legend>
+            <div id="additional-info-container" class="space-y-6">
+                {% for info in data.additional_info %}
+                <div class="info-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
+                    <button type="button" onclick="removeBlock(this, 'info-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Informação">×</button>
+                    <h3 class="text-lg font-medium text-slate-700 mb-3">Informação <span class="item-number">{{ loop.index }}</span></h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="info_title_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Título:</label>
+                            <input type="text" id="info_title_{{loop.index0}}" name="info_title[{{loop.index0}}]" value="{{ info.title | default('', true) }}" class="form-input-base" required>
+                        </div>
+                        <div>
+                            <label for="info_description_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Descrição:</label>
+                            <textarea id="info_description_{{loop.index0}}" name="info_description[{{loop.index0}}]" rows="3" class="form-textarea-base min-h-[80px]">{{ info.description | default('', true) }}</textarea>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                 {# <p class="text-slate-500 italic">No additional info added yet.</p> #}
+                {% endfor %}
+            </div>
+            <button type="button" id="add-info-btn" class="mt-6 px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                + Adicionar Informação
+            </button>
+        </fieldset>
+
+        <!-- References Section -->
+        <fieldset class="border border-slate-300 p-6 rounded-md">
+            <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Referências</legend>
+            <div id="references-container" class="space-y-6">
+                {% for ref in data.references %}
+                <div class="reference-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
+                    <button type="button" onclick="removeBlock(this, 'reference-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Referência">×</button>
+                    <h3 class="text-lg font-medium text-slate-700 mb-3">Referência <span class="item-number">{{ loop.index }}</span></h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="ref_name_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Nome:</label>
+                            <input type="text" id="ref_name_{{loop.index0}}" name="ref_name[{{loop.index0}}]" value="{{ ref.name | default('Maria Santos', true) }}" class="form-input-base" required>
+                        </div>
+                        <div>
+                            <label for="ref_title_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Cargo:</label>
+                            <input type="text" id="ref_title_{{loop.index0}}" name="ref_title[{{loop.index0}}]" value="{{ ref.title | default('Gerente de Projetos, Tech Solutions Lda', true) }}" class="form-input-base">
+                        </div>
+                        <div>
+                            <label for="ref_phone_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Telefone:</label>
+                            <input type="tel" id="ref_phone_{{loop.index0}}" name="ref_phone[{{loop.index0}}]" value="{{ ref.phone | default('Disponível mediante solicitação', true) }}" class="form-input-base">
+                        </div>
+                        <div>
+                            <label for="ref_description_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Descrição:</label>
+                            <textarea id="ref_description_{{loop.index0}}" name="ref_description[{{loop.index0}}]" rows="3" class="form-textarea-base min-h-[80px]">{{ ref.description | default('', true) }}</textarea>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                 {# <p class="text-slate-500 italic">No references added yet.</p> #}
+                {% endfor %}
+            </div>
+            <button type="button" id="add-reference-btn" class="mt-6 px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                + Adicionar Referência
+            </button>
+        </fieldset>
+
+        <!-- Skills Section -->
+        <fieldset class="border border-slate-300 p-6 rounded-md">
+            <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Habilidades</legend>
+            <div class="space-y-4">
+                <div>
+                    <label for="skills" class="block text-sm font-medium text-slate-700 mb-1">Habilidades:</label>
+                    <textarea id="skills" name="skills" rows="4" class="form-textarea-base min-h-[80px]">{{ data.skills | default('PHP, Laravel, JavaScript, Vue.js, React, Node.js, HTML5, CSS3, Tailwind CSS, SQL (MySQL, PostgreSQL), NoSQL (MongoDB), Git, Docker, REST APIs, GraphQL, Testes Unitários (PHPUnit), Metodologias Ágeis (Scrum), Resolução de Problemas, Comunicação, Trabalho em Equipe', true) }}</textarea>
+                </div>
+            </div>
         </fieldset>
 
         <div class="flex justify-end mt-10">
             <button type="submit" class="px-6 py-3 bg-sky-600 text-white font-semibold rounded-md shadow-md hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                Next: Order Sections →
+                Próximo: Ordenar Seções →
             </button>
         </div>
     </form>
 </div>
 
+<!-- Template for Achievement Block -->
+<template id="achievement-template">
+    <div class="achievement-block p-3 border border-slate-200 rounded-md bg-slate-50 relative">
+        <button type="button" onclick="removeBlock(this, 'achievement-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Conquista">×</button>
+        <h4 class="text-md font-medium text-slate-600 mb-2">Conquista <span class="item-number"></span></h4>
+        <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Título:</label>
+            <input type="text" name="ach_title[]" class="form-input-base">
+        </div>
+        <div class="mt-3">
+            <label class="block text-sm font-medium text-slate-700 mb-1">Descrição:</label>
+            <textarea name="ach_description[]" rows="2" class="form-textarea-base min-h-[60px]"></textarea>
+        </div>
+    </div>
+</template>
+
+<!-- Template for Course Block -->
+<template id="course-template">
+    <div class="course-block p-3 border border-slate-200 rounded-md bg-slate-50 relative">
+        <button type="button" onclick="removeBlock(this, 'course-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Curso">×</button>
+        <h4 class="text-md font-medium text-slate-600 mb-2">Curso/Cert <span class="item-number"></span></h4>
+        <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Título do Curso/Certificado:</label>
+            <input type="text" name="course_title[]" class="form-input-base">
+        </div>
+        <div class="mt-3">
+            <label class="block text-sm font-medium text-slate-700 mb-1">Descrição/Instituição:</label>
+            <textarea name="course_description[]" rows="2" class="form-textarea-base min-h-[60px]"></textarea>
+        </div>
+    </div>
+</template>
+
 <!-- Template for Experience Block -->
 <template id="experience-template">
     <div class="experience-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
-        <button type="button" onclick="removeBlock(this, 'experience-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remove Experience">×</button>
-        <h3 class="text-lg font-medium text-slate-700 mb-3">Experience <span class="item-number"></span></h3>
+        <button type="button" onclick="removeBlock(this, 'experience-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Experiência">×</button>
+        <h3 class="text-lg font-medium text-slate-700 mb-3">Experiência <span class="item-number"></span></h3>
         <div class="space-y-4">
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Job Title:</label>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Nome da Empresa:</label>
                 <input type="text" name="exp_title[]" class="form-input-base" required>
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Company:</label>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Cargo:</label>
                 <input type="text" name="exp_company[]" class="form-input-base">
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Location (City, State):</label>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Localização:</label>
                 <input type="text" name="exp_location[]" class="form-input-base">
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Start Date:</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Data de Início:</label>
                     <input type="month" name="exp_start_date[]" class="form-input-base">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">End Date:</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Data de Término:</label>
                     <input type="month" name="exp_end_date[]" class="form-input-base">
                 </div>
                 <div class="flex items-center mb-1 pt-6 md:pt-0 md:self-center">
                     <input type="checkbox" name="exp_present[]" class="form-checkbox-base h-5 w-5 text-sky-600 focus:ring-sky-500" onchange="toggleEndDate(this)">
-                    <label class="ml-2 text-sm text-slate-700">I currently work here</label>
+                    <label class="ml-2 text-sm text-slate-700">Atualmente trabalho aqui</label>
                 </div>
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Description (one point per line):</label>
-                <textarea name="exp_description[]" rows="5" class="form-textarea-base min-h-[100px]" placeholder="- Achieved X by doing Y..."></textarea>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Descrição da Empresa:</label>
+                <textarea name="exp_description[]" rows="5" class="form-textarea-base min-h-[100px]" placeholder="- Liderou o desenvolvimento..."></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Principais Conquistas:</label>
+                <textarea name="exp_achievements[]" rows="5" class="form-textarea-base min-h-[100px]" placeholder="- Liderou o desenvolvimento..."></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Principais Responsabilidades:</label>
+                <textarea name="exp_responsibilities[]" rows="5" class="form-textarea-base min-h-[100px]" placeholder="- Desenvolvimento e manutenção..."></textarea>
             </div>
         </div>
     </div>
@@ -246,38 +457,130 @@
 <!-- Template for Education Block -->
 <template id="education-template">
     <div class="education-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
-        <button type="button" onclick="removeBlock(this, 'education-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remove Education">×</button>
-        <h3 class="text-lg font-medium text-slate-700 mb-3">Education <span class="item-number"></span></h3>
+        <button type="button" onclick="removeBlock(this, 'education-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Educação">×</button>
+        <h3 class="text-lg font-medium text-slate-700 mb-3">Educação <span class="item-number"></span></h3>
         <div class="space-y-4">
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Degree/Certificate:</label>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Escola/Universidade:</label>
                 <input type="text" name="edu_degree[]" class="form-input-base" required>
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Institution:</label>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Grau e Área de Estudo:</label>
                 <input type="text" name="edu_institution[]" class="form-input-base">
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Location (City, State):</label>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Ano de Conclusão:</label>
                 <input type="text" name="edu_location[]" class="form-input-base">
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Start Date:</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Data de Início:</label>
                     <input type="month" name="edu_start_date[]" class="form-input-base">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">End Date:</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Data de Término:</label>
                     <input type="month" name="edu_end_date[]" class="form-input-base">
                 </div>
                  <div class="flex items-center mb-1 pt-6 md:pt-0 md:self-center">
                     <input type="checkbox" name="edu_present[]" class="form-checkbox-base h-5 w-5 text-sky-600 focus:ring-sky-500" onchange="toggleEndDate(this)">
-                    <label class="ml-2 text-sm text-slate-700">Currently enrolled</label>
+                    <label class="ml-2 text-sm text-slate-700">Atualmente matriculado</label>
                 </div>
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Details (e.g., GPA, Honors, Relevant Coursework):</label>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Detalhes (e.g., GPA, Honors, Relevant Coursework):</label>
                 <textarea name="edu_details[]" rows="3" class="form-textarea-base min-h-[80px]"></textarea>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Template for Language Block -->
+<template id="language-template">
+    <div class="language-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
+        <button type="button" onclick="removeBlock(this, 'language-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Idioma">×</button>
+        <h3 class="text-lg font-medium text-slate-700 mb-3">Idioma <span class="item-number"></span></h3>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Idioma:</label>
+                <select name="lang_name[]" class="form-input-base">
+                    <option value="Português">Português</option>
+                    <option value="Inglês">Inglês</option>
+                    <option value="Espanhol">Espanhol</option>
+                    <option value="Francês">Francês</option>
+                    <option value="Alemão">Alemão</option>
+                    <!-- Add more languages as needed -->
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Nível de Conversação:</label>
+                <select name="lang_level[]" class="form-input-base">
+                    <option value="Fluente">Fluente</option>
+                    <option value="Avançado">Avançado</option>
+                    <option value="Intermediário">Intermediário</option>
+                    <option value="Básico">Básico</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Nível de Leitura:</label>
+                <select name="lang_reading[]" class="form-input-base">
+                    <option value="Fluente">Fluente</option>
+                    <option value="Avançado">Avançado</option>
+                    <option value="Intermediário">Intermediário</option>
+                    <option value="Básico">Básico</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Nível de Escrita:</label>
+                <select name="lang_writing[]" class="form-input-base">
+                    <option value="Fluente">Fluente</option>
+                    <option value="Avançado">Avançado</option>
+                    <option value="Intermediário">Intermediário</option>
+                    <option value="Básico">Básico</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Template for Additional Info Block -->
+<template id="info-template">
+    <div class="info-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
+        <button type="button" onclick="removeBlock(this, 'info-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Informação">×</button>
+        <h3 class="text-lg font-medium text-slate-700 mb-3">Informação <span class="item-number"></span></h3>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Título:</label>
+                <input type="text" name="info_title[]" class="form-input-base" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Descrição:</label>
+                <textarea name="info_description[]" rows="3" class="form-textarea-base min-h-[80px]"></textarea>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Template for Reference Block -->
+<template id="reference-template">
+    <div class="reference-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
+        <button type="button" onclick="removeBlock(this, 'reference-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Referência">×</button>
+        <h3 class="text-lg font-medium text-slate-700 mb-3">Referência <span class="item-number"></span></h3>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Nome:</label>
+                <input type="text" name="ref_name[]" class="form-input-base" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Cargo:</label>
+                <input type="text" name="ref_title[]" class="form-input-base">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Telefone:</label>
+                <input type="tel" name="ref_phone[]" class="form-input-base">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Descrição:</label>
+                <textarea name="ref_description[]" rows="3" class="form-textarea-base min-h-[80px]"></textarea>
             </div>
         </div>
     </div>
@@ -288,27 +591,60 @@
 <script>
     // Keep track of the next index to use for dynamically added blocks
     // Initialize based on the number of blocks rendered from server-side data
+    let achievementIndex = {{ data.key_achievements|length if data.key_achievements else 0 }};
+    let courseIndex = {{ data.courses|length if data.courses else 0 }};
     let experienceIndex = {{ data.experiences|length if data.experiences else 0 }};
     let educationIndex = {{ data.education_entries|length if data.education_entries else 0 }};
+    let languageIndex = {{ data.languages|length if data.languages else 0 }};
+    let infoIndex = {{ data.additional_info|length if data.additional_info else 0 }};
+    let referenceIndex = {{ data.references|length if data.references else 0 }};
 
     document.addEventListener('DOMContentLoaded', function () {
         // Add initial block if none exist (for a completely new resume)
+        if (achievementIndex === 0 && document.getElementById('achievements-container').children.length === 0) {
+            addAchievementBlock(true); // Pass true for initial block logic
+        }
+        if (courseIndex === 0 && document.getElementById('courses-container').children.length === 0) {
+            addCourseBlock(true); // Pass true for initial block logic
+        }
         if (experienceIndex === 0 && document.getElementById('experiences-container').children.length === 0) {
             addExperienceBlock(true); // Pass true for initial block logic
         }
         if (educationIndex === 0 && document.getElementById('education-container').children.length === 0) {
             addEducationBlock(true); // Pass true for initial block logic
         }
+        if (languageIndex === 0 && document.getElementById('languages-container').children.length === 0) {
+            addLanguageBlock(true); // Pass true for initial block logic
+        }
+        if (infoIndex === 0 && document.getElementById('additional-info-container').children.length === 0) {
+            addInfoBlock(true); // Pass true for initial block logic
+        }
+        if (referenceIndex === 0 && document.getElementById('references-container').children.length === 0) {
+            addReferenceBlock(true); // Pass true for initial block logic
+        }
 
         // Add event listeners to buttons
+        document.getElementById('add-achievement-btn').addEventListener('click', () => addAchievementBlock(false));
+        document.getElementById('add-course-btn').addEventListener('click', () => addCourseBlock(false));
         document.getElementById('add-experience-btn').addEventListener('click', () => addExperienceBlock(false));
         document.getElementById('add-education-btn').addEventListener('click', () => addEducationBlock(false));
+        document.getElementById('add-language-btn').addEventListener('click', () => addLanguageBlock(false));
+        document.getElementById('add-info-btn').addEventListener('click', () => addInfoBlock(false));
+        document.getElementById('add-reference-btn').addEventListener('click', () => addReferenceBlock(false));
 
         // Initialize "Present" checkboxes state for existing items loaded from data
         initializePresentCheckboxes();
     });
 
     // --- Dynamic Block Functions ---
+
+    function addAchievementBlock(isInitial = false) {
+        addDynamicBlock('achievement', isInitial);
+    }
+
+    function addCourseBlock(isInitial = false) {
+        addDynamicBlock('course', isInitial);
+    }
 
     function addExperienceBlock(isInitial = false) {
         addDynamicBlock('experience', isInitial);
@@ -318,16 +654,40 @@
         addDynamicBlock('education', isInitial);
     }
 
+    function addLanguageBlock(isInitial = false) {
+        addDynamicBlock('language', isInitial);
+    }
+
+    function addInfoBlock(isInitial = false) {
+        addDynamicBlock('info', isInitial);
+    }
+
+    function addReferenceBlock(isInitial = false) {
+        addDynamicBlock('reference', isInitial);
+    }
+
     function addDynamicBlock(type, isInitial = false) {
         const template = document.getElementById(`${type}-template`).content.cloneNode(true);
         const newBlock = template.querySelector(`.${type}-block`);
         const container = document.getElementById(`${type}s-container`); // e.g., experiences-container
 
         // Determine current index and increment global counter
-        const currentIndex = (type === 'experience') ? experienceIndex : educationIndex;
+        const currentIndex = (type === 'achievement') ? achievementIndex :
+                             (type === 'course') ? courseIndex :
+                             (type === 'experience') ? experienceIndex :
+                             (type === 'education') ? educationIndex :
+                             (type === 'language') ? languageIndex :
+                             (type === 'info') ? infoIndex :
+                             referenceIndex;
+
         if (!isInitial || currentIndex === 0) { // Increment if adding new or first initial
-           if (type === 'experience') experienceIndex++;
-           else educationIndex++;
+           if (type === 'achievement') achievementIndex++;
+           else if (type === 'course') courseIndex++;
+           else if (type === 'experience') experienceIndex++;
+           else if (type === 'education') educationIndex++;
+           else if (type === 'language') languageIndex++;
+           else if (type === 'info') infoIndex++;
+           else referenceIndex++;
         }
 
         // Update names and IDs in the cloned template
@@ -375,10 +735,9 @@
         container.appendChild(newBlock);
     }
 
-
     function removeBlock(button, blockClass) {
         const blockToRemove = button.closest('.' + blockClass);
-        const container = blockToRemove ? blockToRemove.closest('#experiences-container, #education-container') : null;
+        const container = blockToRemove ? blockToRemove.closest('#achievements-container, #courses-container, #experiences-container, #education-container, #languages-container, #additional-info-container, #references-container') : null;
 
         if (blockToRemove && container) {
             // Check if this is the last block (only applicable if we enforce at least one)
@@ -404,7 +763,6 @@
              // If strict sequential indexing is required, you'd need a more robust re-indexing function here.
          });
     }
-
 
     function toggleEndDate(checkboxElement, specificEndDateId = null) {
         let endDateEl;
