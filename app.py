@@ -129,6 +129,7 @@ SAMPLE_RESUME_DATA = {
             'edu_details': 'Graduated with Honors.'
         }
     ],
+     'languages': [], # ADDED
     # section_order will be added dynamically
 }
 
@@ -138,11 +139,18 @@ REORDERABLE_SECTIONS = {
     'summary': 'Professional Summary',
     'experience': 'Professional Experience',
     'education': 'Education',
-    'achievements': 'Key Achievements', # Add logic in PDF template to place correctly (e.g., left col)
-    'courses': 'Courses'               # Add logic in PDF template to place correctly (e.g., left col)
+    'achievements': 'Key Achievements',
+    'courses': 'Courses',
+    'skills': 'Skills',
+    'hobbies': 'Hobbies',
+    'languages': 'Languages',
+    'additional_info': 'Additional Information',
+    'references': 'References',
+    'projects': 'Projects',
 }
+
 # Define a default order - adjust based on common preference
-DEFAULT_SECTION_ORDER = ['summary', 'experience', 'education', 'achievements', 'courses']
+DEFAULT_SECTION_ORDER = list(REORDERABLE_SECTIONS.keys())
 
 
 # --- Routes ---
@@ -167,12 +175,28 @@ def resume_form():
             'phone': request.form.get('phone', '').strip(),
             'linkedin': request.form.get('linkedin', '').strip(),
             'location': request.form.get('location', '').strip(),
+            'nationality': request.form.get('nationality', '').strip(),
+            'birth_date': request.form.get('birth_date', '').strip(),
+            'gender': request.form.get('gender', '').strip(),
             'profile_image_path': existing_profile_path, # Keep existing image path for now
             'summary': request.form.get('summary', '').strip(),
+            'place_of_birth': request.form.get('place_of_birth', '').strip(),  # Novo
+            'cargo': request.form.get('cargo', '').strip(),
+            'driving_license': request.form.get('driving_license', '').strip(),
+            'marital_status': request.form.get('marital_status', '').strip(),
+            'military_service': request.form.get('military_service', '').strip(),
+            'website': request.form.get('website', '').strip(),
+            'address': request.form.get('address', '').strip(),
+            'skills': request.form.get('skills', '').strip(),
+            'hobbies': request.form.get('hobbies', '').strip(),
             'key_achievements': [],
             'courses': [],
             'experiences': [],
-            'education_entries': []
+            'education_entries': [],
+            'languages': [],
+            'additional_info': [],
+            'references': [],
+            'projects': [],
         }
 
         # --- Parsing logic for lists ---
@@ -208,7 +232,9 @@ def resume_form():
                 'start_date': request.form.get(f'exp_start_date[{i}]', ''),
                 'end_date': request.form.get(f'exp_end_date[{i}]', '') if not is_present_val else '',
                 'is_present': is_present_val,
-                'description': request.form.get(f'exp_description[{i}]', '').strip()
+                'description': request.form.get(f'exp_description[{i}]', '').strip(),
+                'achievements': request.form.get(f'exp_achievements[{i}]', '').strip(),
+                'responsibilities': request.form.get(f'exp_responsibilities[{i}]', '').strip(),
             })
             i += 1
 
@@ -229,6 +255,60 @@ def resume_form():
                 'edu_details': request.form.get(f'edu_details[{i}]', '').strip()
             })
             i += 1
+
+        # Languages (dynamic number)
+        i = 0
+        while True:
+            lang_name_key = f'lang_name[{i}]'
+            if lang_name_key not in request.form or not request.form[lang_name_key].strip():
+                break
+            resume_data['languages'].append({
+                'name': request.form[lang_name_key].strip(),
+                'level': request.form.get(f'lang_level[{i}]', '').strip(),
+                'reading': request.form.get(f'lang_reading[{i}]', '').strip(),
+                'writing': request.form.get(f'lang_writing[{i}]', '').strip()
+            })
+            i += 1
+
+        # Additional Info (dynamic number)
+        i = 0
+        while True:
+            info_title_key = f'info_title[{i}]'
+            if info_title_key not in request.form or not request.form[info_title_key].strip():
+                break
+            resume_data['additional_info'].append({
+                'title': request.form[info_title_key].strip(),
+                'description': request.form.get(f'info_description[{i}]', '').strip()
+            })
+            i += 1
+
+        # References (dynamic number)
+        i = 0
+        while True:
+            ref_name_key = f'ref_name[{i}]'
+            if ref_name_key not in request.form or not request.form[ref_name_key].strip():
+                break
+            resume_data['references'].append({
+                'name': request.form[ref_name_key].strip(),
+                'title': request.form.get(f'ref_title[{i}]', '').strip(),
+                'phone': request.form.get(f'ref_phone[{i}]', '').strip(),
+                'description': request.form.get(f'ref_description[{i}]', '').strip()
+            })
+            i += 1
+
+        # Projects (dynamic number)
+        i = 0
+        while True:
+            proj_title_key = f'proj_title[{i}]'
+            if proj_title_key not in request.form or not request.form[proj_title_key].strip():
+                break
+            resume_data['projects'].append({
+                'title': request.form[proj_title_key].strip(),
+                'description': request.form.get(f'proj_description[{i}]', '').strip(),
+                'dates': request.form.get(f'proj_dates[{i}]', '').strip()
+            })
+            i += 1
+
         # --- End of Parsing Logic ---
 
         # Add default section order when saving data
@@ -265,8 +345,8 @@ def order_sections():
 
             # Validate: Check if all reorderable sections are present exactly once
             if set(submitted_keys) == set(REORDERABLE_SECTIONS.keys()) and len(submitted_keys) == len(REORDERABLE_SECTIONS):
-                resume_data['section_order'] = submitted_keys # Update order in data
-                session['resume_data'] = resume_data # Save updated data to session
+                resume_data['section_order'] = submitted_keys  # Update order in data
+                session['resume_data'] = resume_data  # Save updated data to session
                 flash("Section order updated.", "success")
                 return redirect(url_for('select_pdf_template'))
             else:
@@ -287,12 +367,12 @@ def order_sections():
     current_keys_set = set(current_order)
     missing_keys = [key for key in REORDERABLE_SECTIONS if key not in current_keys_set]
     for key in missing_keys:
-         ordered_sections_for_template.append((key, REORDERABLE_SECTIONS[key])) # Append missing ones at the end
-
+        ordered_sections_for_template.append((key, REORDERABLE_SECTIONS[key]))  # Append missing ones at the end
+    print("ordered_sections_for_template: ", ordered_sections_for_template) # for debugging
     return render_template('order_sections.html',
                            title="Order Resume Sections",
-                           sections=ordered_sections_for_template)
-
+                           sections=ordered_sections_for_template,
+                           available_sections=REORDERABLE_SECTIONS)
 
 @app.route('/select-template', methods=['GET'])
 def select_pdf_template():
