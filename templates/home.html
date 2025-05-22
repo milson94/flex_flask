@@ -3,10 +3,13 @@
 
 {% block head_extra_styles %}
 <style>
-    /* Optional: Add specific styles for the home page if needed */
+    /* Opcional: Adicione estilos específicos para a página inicial */
     .hero-section {
-        /* Example: Add a background or specific spacing */
-        /* background-color: #f0f9ff; /* light sky */
+        /* background-color: #f0f9ff; /* Fundo claro (opcional) */
+    }
+
+    .features-section .grid {
+        justify-content: center;
     }
 </style>
 {% endblock %}
@@ -14,43 +17,43 @@
 {% block content %}
 <div class="hero-section text-center py-16 px-4 md:py-24">
     <h1 class="text-4xl md:text-5xl font-bold text-sky-700 mb-4">
-        Build Your Professional Resume
+        Crie Seu Currículo Profissional
     </h1>
     <p class="text-lg md:text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
-        Create a stunning, modern resume in minutes. Fill out your details, choose a template, and download your PDF.
+        Faça um currículo incrível e moderno em minutos. Preencha seus dados, escolha um modelo e baixe seu PDF.
     </p>
     <a href="{{ url_for('resume_form') }}" 
        class="inline-block px-8 py-3 bg-sky-600 text-white font-semibold rounded-md shadow-md hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 transition ease-in-out duration-150 text-lg">
-        Start Building Your Resume
+        Começar a Criar Meu Currículo
     </a>
 </div>
 
-<!-- Optional: Add more sections like Features, How it Works, etc. -->
-<!--
+<!-- Seção Recursos - Centralizada -->
 <div class="features-section py-16 px-4 bg-white">
-    <h2 class="text-3xl font-bold text-center text-sky-700 mb-10">Features</h2>
-    <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-        <div class="feature-item text-center p-6 border border-slate-200 rounded-lg shadow-sm">
-            <span class="text-4xl mb-4 block">📄</span>  <-- Replace with actual icons -->
-<!--         <h3 class="text-xl font-semibold text-slate-800 mb-2">Multiple Templates</h3>
-            <p class="text-slate-600">Choose from classic or modern designs to best suit your profile.</p>
+    <h2 class="text-3xl font-bold text-center text-sky-700 mb-10">Recursos</h2>
+    
+    <!-- Container centralizado -->
+    <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto text-center">
+        <div class="feature-item p-6 border border-slate-200 rounded-lg shadow-sm">
+            <span class="text-4xl mb-4 block">📄</span>
+            <h3 class="text-xl font-semibold text-slate-800 mb-2">Vários Modelos</h3>
+            <p class="text-slate-600">Escolha entre designs clássicos ou modernos que melhor se encaixam no seu perfil.</p>
         </div>
-        <div class="feature-item text-center p-6 border border-slate-200 rounded-lg shadow-sm">
+        <div class="feature-item p-6 border border-slate-200 rounded-lg shadow-sm">
             <span class="text-4xl mb-4 block">✏️</span>
-            <h3 class="text-xl font-semibold text-slate-800 mb-2">Easy Editing</h3>
-            <p class="text-slate-600">Fill in your details through a simple, guided form.</p>
+            <h3 class="text-xl font-semibold text-slate-800 mb-2">Edição Fácil</h3>
+            <p class="text-slate-600">Preencha seus dados de forma simples e guiada.</p>
         </div>
-        <div class="feature-item text-center p-6 border border-slate-200 rounded-lg shadow-sm">
+        <div class="feature-item p-6 border border-slate-200 rounded-lg shadow-sm">
             <span class="text-4xl mb-4 block">💾</span>
-            <h3 class="text-xl font-semibold text-slate-800 mb-2">PDF Download</h3>
-            <p class="text-slate-600">Get your professional resume as a high-quality PDF instantly.</p>
+            <h3 class="text-xl font-semibold text-slate-800 mb-2">Baixar em PDF</h3>
+            <p class="text-slate-600">Obtenha seu currículo profissional como um PDF de alta qualidade instantaneamente.</p>
         </div>
     </div>
 </div>
--->
 
 {% endblock %}
 
 {% block body_end_scripts %}
-<!-- No specific scripts needed for this simple home page -->
+<!-- Nenhum script específico necessário para esta página simples -->
 {% endblock %}
