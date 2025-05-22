@@ -78,18 +78,18 @@
         <fieldset class="border border-slate-300 p-6 rounded-md">
             <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Principais Conquistas (Opcional, Máx 3)</legend>
             <div id="achievements-container" class="space-y-4">
-              {% for i in range(1, 4) %}
-              {% set ach = data.key_achievements[loop.index0] if data.key_achievements and loop.index0 < data.key_achievements|length else {} %}
+              {% for i in range(3) %} {# Changed range to 0-indexed for consistency with loop.index0 #}
+              {% set ach = data.key_achievements[i] if data.key_achievements and i < data.key_achievements|length else {} %}
               <div class="achievement-block p-3 border border-slate-200 rounded-md bg-slate-50 relative">
-                  <button type="button" onclick="removeBlock(this, 'achievement-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Conquista">×</button>
-                  <h4 class="text-md font-medium text-slate-600 mb-2">Conquista {{i}}</h4>
+                  <button type="button" onclick="removeBlock(this, 'achievement-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Conquista" {% if loop.index0 >= data.key_achievements|length %}style="display: none;"{% endif %}>×</button> {# Hide remove button for empty initial blocks #}
+                  <h4 class="text-md font-medium text-slate-600 mb-2">Conquista {{loop.index}}</h4>
                   <div>
                       <label for="ach_title_{{i}}" class="block text-sm font-medium text-slate-700 mb-1">Título:</label>
-                      <input type="text" id="ach_title_{{i}}" name="ach_title_{{i}}" value="{{ ach.title | default('', true) }}" class="form-input-base">
+                      <input type="text" id="ach_title_{{i}}" name="ach_title[{{i}}]" value="{{ ach.title | default('', true) }}" class="form-input-base">
                   </div>
                   <div class="mt-3">
                       <label for="ach_description_{{i}}" class="block text-sm font-medium text-slate-700 mb-1">Descrição:</label>
-                      <textarea id="ach_description_{{i}}" name="ach_description_{{i}}" rows="2" class="form-textarea-base min-h-[60px]">{{ ach.description | default('', true) }}</textarea>
+                      <textarea id="ach_description_{{i}}" name="ach_description[{{i}}]" rows="2" class="form-textarea-base min-h-[60px]">{{ ach.description | default('', true) }}</textarea>
                   </div>
               </div>
               {% endfor %}
@@ -103,18 +103,18 @@
         <fieldset class="border border-slate-300 p-6 rounded-md">
             <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Cursos/Certificações (Opcional, Máx 2)</legend>
              <div id="courses-container" class="space-y-4">
-                {% for i in range(1, 3) %}
-                {% set course = data.courses[loop.index0] if data.courses and loop.index0 < data.courses|length else {} %}
+                {% for i in range(2) %} {# Changed range to 0-indexed for consistency with loop.index0 #}
+                {% set course = data.courses[i] if data.courses and i < data.courses|length else {} %}
                 <div class="course-block p-3 border border-slate-200 rounded-md bg-slate-50 relative">
-                    <button type="button" onclick="removeBlock(this, 'course-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Curso">×</button>
-                     <h4 class="text-md font-medium text-slate-600 mb-2">Curso/Cert {{i}}</h4>
+                    <button type="button" onclick="removeBlock(this, 'course-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Curso" {% if loop.index0 >= data.courses|length %}style="display: none;"{% endif %}>×</button> {# Hide remove button for empty initial blocks #}
+                     <h4 class="text-md font-medium text-slate-600 mb-2">Curso/Cert {{loop.index}}</h4>
                     <div>
                         <label for="course_title_{{i}}" class="block text-sm font-medium text-slate-700 mb-1">Título do Curso/Certificado:</label>
-                        <input type="text" id="course_title_{{i}}" name="course_title_{{i}}" value="{{ course.title | default('', true) }}" class="form-input-base">
+                        <input type="text" id="course_title_{{i}}" name="course_title[{{i}}]" value="{{ course.title | default('', true) }}" class="form-input-base">
                     </div>
                     <div class="mt-3">
                         <label for="course_description_{{i}}" class="block text-sm font-medium text-slate-700 mb-1">Descrição/Instituição:</label>
-                        <textarea id="course_description_{{i}}" name="course_description_{{i}}" rows="2" class="form-textarea-base min-h-[60px]">{{ course.description | default('', true) }}</textarea>
+                        <textarea id="course_description_{{i}}" name="course_description[{{i}}]" rows="2" class="form-textarea-base min-h-[60px]">{{ course.description | default('', true) }}</textarea>
                     </div>
                 </div>
                 {% endfor %}
@@ -295,24 +295,40 @@
         <fieldset class="border border-slate-300 p-6 rounded-md">
             <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Informações Adicionais</legend>
             <div id="additional-info-container" class="space-y-6">
-                {% for info in data.additional_info %}
+                {% if not data.additional_info %}
+                {# Render one empty info block if no data exists #}
                 <div class="info-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
-                    <button type="button" onclick="removeBlock(this, 'info-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Informação">×</button>
-                    <h3 class="text-lg font-medium text-slate-700 mb-3">Informação <span class="item-number">{{ loop.index }}</span></h3>
+                    <button type="button" onclick="removeBlock(this, 'info-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Informação" style="display: none;">×</button>
+                    <h3 class="text-lg font-medium text-slate-700 mb-3">Informação <span class="item-number">1</span></h3>
                     <div class="space-y-4">
                         <div>
-                            <label for="info_title_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Título:</label>
-                            <input type="text" id="info_title_{{loop.index0}}" name="info_title[{{loop.index0}}]" value="{{ info.title | default('', true) }}" class="form-input-base" required>
+                            <label for="info_title_0" class="block text-sm font-medium text-slate-700 mb-1">Título:</label>
+                            <input type="text" id="info_title_0" name="info_title[0]" value="" class="form-input-base" required>
                         </div>
                         <div>
-                            <label for="info_description_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Descrição:</label>
-                            <textarea id="info_description_{{loop.index0}}" name="info_description[{{loop.index0}}]" rows="3" class="form-textarea-base min-h-[80px]">{{ info.description | default('', true) }}</textarea>
+                            <label for="info_description_0" class="block text-sm font-medium text-slate-700 mb-1">Descrição:</label>
+                            <textarea id="info_description_0" name="info_description[0]" rows="3" class="form-textarea-base min-h-[80px]"></textarea>
                         </div>
                     </div>
                 </div>
                 {% else %}
-                 {# <p class="text-slate-500 italic">No additional info added yet.</p> #}
-                {% endfor %}
+                    {% for info in data.additional_info %}
+                    <div class="info-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
+                        <button type="button" onclick="removeBlock(this, 'info-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Informação">×</button>
+                        <h3 class="text-lg font-medium text-slate-700 mb-3">Informação <span class="item-number">{{ loop.index }}</span></h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="info_title_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Título:</label>
+                                <input type="text" id="info_title_{{loop.index0}}" name="info_title[{{loop.index0}}]" value="{{ info.title | default('', true) }}" class="form-input-base" required>
+                            </div>
+                            <div>
+                                <label for="info_description_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Descrição:</label>
+                                <textarea id="info_description_{{loop.index0}}" name="info_description[{{loop.index0}}]" rows="3" class="form-textarea-base min-h-[80px]">{{ info.description | default('', true) }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
             </div>
             <button type="button" id="add-info-btn" class="mt-6 px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
                 + Adicionar Informação
@@ -323,32 +339,56 @@
         <fieldset class="border border-slate-300 p-6 rounded-md">
             <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Referências</legend>
             <div id="references-container" class="space-y-6">
-                {% for ref in data.references %}
+                {% if not data.references %}
+                {# Render one empty reference block if no data exists #}
                 <div class="reference-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
-                    <button type="button" onclick="removeBlock(this, 'reference-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Referência">×</button>
-                    <h3 class="text-lg font-medium text-slate-700 mb-3">Referência <span class="item-number">{{ loop.index }}</span></h3>
+                    <button type="button" onclick="removeBlock(this, 'reference-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Referência" style="display: none;">×</button>
+                    <h3 class="text-lg font-medium text-slate-700 mb-3">Referência <span class="item-number">1</span></h3>
                     <div class="space-y-4">
                         <div>
-                            <label for="ref_name_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Nome:</label>
-                            <input type="text" id="ref_name_{{loop.index0}}" name="ref_name[{{loop.index0}}]" value="{{ ref.name | default('Maria Santos', true) }}" class="form-input-base" required>
+                            <label for="ref_name_0" class="block text-sm font-medium text-slate-700 mb-1">Nome:</label>
+                            <input type="text" id="ref_name_0" name="ref_name[0]" value="" class="form-input-base" required>
                         </div>
                         <div>
-                            <label for="ref_title_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Cargo:</label>
-                            <input type="text" id="ref_title_{{loop.index0}}" name="ref_title[{{loop.index0}}]" value="{{ ref.title | default('Gerente de Projetos, Tech Solutions Lda', true) }}" class="form-input-base">
+                            <label for="ref_title_0" class="block text-sm font-medium text-slate-700 mb-1">Cargo:</label>
+                            <input type="text" id="ref_title_0" name="ref_title[0]" value="" class="form-input-base">
                         </div>
                         <div>
-                            <label for="ref_phone_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Telefone:</label>
-                            <input type="tel" id="ref_phone_{{loop.index0}}" name="ref_phone[{{loop.index0}}]" value="{{ ref.phone | default('Disponível mediante solicitação', true) }}" class="form-input-base">
+                            <label for="ref_phone_0" class="block text-sm font-medium text-slate-700 mb-1">Telefone:</label>
+                            <input type="tel" id="ref_phone_0" name="ref_phone[0]" value="" class="form-input-base">
                         </div>
                         <div>
-                            <label for="ref_description_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Descrição:</label>
-                            <textarea id="ref_description_{{loop.index0}}" name="ref_description[{{loop.index0}}]" rows="3" class="form-textarea-base min-h-[80px]">{{ ref.description | default('', true) }}</textarea>
+                            <label for="ref_description_0" class="block text-sm font-medium text-slate-700 mb-1">Descrição:</label>
+                            <textarea id="ref_description_0" name="ref_description[0]" rows="3" class="form-textarea-base min-h-[80px]"></textarea>
                         </div>
                     </div>
                 </div>
                 {% else %}
-                 {# <p class="text-slate-500 italic">No references added yet.</p> #}
-                {% endfor %}
+                    {% for ref in data.references %}
+                    <div class="reference-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
+                        <button type="button" onclick="removeBlock(this, 'reference-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Referência">×</button>
+                        <h3 class="text-lg font-medium text-slate-700 mb-3">Referência <span class="item-number">{{ loop.index }}</span></h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="ref_name_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Nome:</label>
+                                <input type="text" id="ref_name_{{loop.index0}}" name="ref_name[{{loop.index0}}]" value="{{ ref.name | default('Maria Santos', true) }}" class="form-input-base" required>
+                            </div>
+                            <div>
+                                <label for="ref_title_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Cargo:</label>
+                                <input type="text" id="ref_title_{{loop.index0}}" name="ref_title[{{loop.index0}}]" value="{{ ref.title | default('Gerente de Projetos, Tech Solutions Lda', true) }}" class="form-input-base">
+                            </div>
+                            <div>
+                                <label for="ref_phone_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Telefone:</label>
+                                <input type="tel" id="ref_phone_{{loop.index0}}" name="ref_phone[{{loop.index0}}]" value="{{ ref.phone | default('Disponível mediante solicitação', true) }}" class="form-input-base">
+                            </div>
+                            <div>
+                                <label for="ref_description_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Descrição:</label>
+                                <textarea id="ref_description_{{loop.index0}}" name="ref_description[{{loop.index0}}]" rows="3" class="form-textarea-base min-h-[80px]">{{ ref.description | default('', true) }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
             </div>
             <button type="button" id="add-reference-btn" class="mt-6 px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
                 + Adicionar Referência
@@ -591,37 +631,27 @@
 <script>
     // Keep track of the next index to use for dynamically added blocks
     // Initialize based on the number of blocks rendered from server-side data
-    let achievementIndex = {{ data.key_achievements|length if data.key_achievements else 0 }};
-    let courseIndex = {{ data.courses|length if data.courses else 0 }};
+    // For sections with fixed initial blocks (Achievements, Courses), the index starts AFTER those.
+    let achievementIndex = Math.max({{ data.key_achievements|length if data.key_achievements else 0 }}, 3); // Max 3 achievements initially rendered
+    let courseIndex = Math.max({{ data.courses|length if data.courses else 0 }}, 2); // Max 2 courses initially rendered
     let experienceIndex = {{ data.experiences|length if data.experiences else 0 }};
     let educationIndex = {{ data.education_entries|length if data.education_entries else 0 }};
     let languageIndex = {{ data.languages|length if data.languages else 0 }};
-    let infoIndex = {{ data.additional_info|length if data.additional_info else 0 }};
-    let referenceIndex = {{ data.references|length if data.references else 0 }};
+    // For Additional Info and References, set to 1 if empty because Jinja now renders the 0th item.
+    let infoIndex = {{ data.additional_info|length if data.additional_info else 1 }};
+    let referenceIndex = {{ data.references|length if data.references else 1 }};
 
     document.addEventListener('DOMContentLoaded', function () {
-        // Add initial block if none exist (for a completely new resume)
-        if (achievementIndex === 0 && document.getElementById('achievements-container').children.length === 0) {
-            addAchievementBlock(true); // Pass true for initial block logic
-        }
-        if (courseIndex === 0 && document.getElementById('courses-container').children.length === 0) {
-            addCourseBlock(true); // Pass true for initial block logic
-        }
-        if (experienceIndex === 0 && document.getElementById('experiences-container').children.length === 0) {
-            addExperienceBlock(true); // Pass true for initial block logic
-        }
-        if (educationIndex === 0 && document.getElementById('education-container').children.length === 0) {
-            addEducationBlock(true); // Pass true for initial block logic
-        }
-        if (languageIndex === 0 && document.getElementById('languages-container').children.length === 0) {
-            addLanguageBlock(true); // Pass true for initial block logic
-        }
-        if (infoIndex === 0 && document.getElementById('additional-info-container').children.length === 0) {
-            addInfoBlock(true); // Pass true for initial block logic
-        }
-        if (referenceIndex === 0 && document.getElementById('references-container').children.length === 0) {
-            addReferenceBlock(true); // Pass true for initial block logic
-        }
+        // No longer need to add initial blocks for these sections via JS as Jinja now handles it.
+        // if (infoIndex === 0 && document.getElementById('additional-info-container').children.length === 0) {
+        //     addInfoBlock(true);
+        // }
+        // if (referenceIndex === 0 && document.getElementById('references-container').children.length === 0) {
+        //     addReferenceBlock(true);
+        // }
+
+        // Initial "Present" checkboxes state for existing items loaded from data
+        initializePresentCheckboxes();
 
         // Add event listeners to buttons
         document.getElementById('add-achievement-btn').addEventListener('click', () => addAchievementBlock(false));
@@ -631,19 +661,19 @@
         document.getElementById('add-language-btn').addEventListener('click', () => addLanguageBlock(false));
         document.getElementById('add-info-btn').addEventListener('click', () => addInfoBlock(false));
         document.getElementById('add-reference-btn').addEventListener('click', () => addReferenceBlock(false));
-
-        // Initialize "Present" checkboxes state for existing items loaded from data
-        initializePresentCheckboxes();
     });
 
     // --- Dynamic Block Functions ---
 
     function addAchievementBlock(isInitial = false) {
         addDynamicBlock('achievement', isInitial);
+        // Special logic for Achievements: Hide/show add button if max reached
+        // This is typically handled by disabling the button when limit is hit.
     }
 
     function addCourseBlock(isInitial = false) {
         addDynamicBlock('course', isInitial);
+        // Special logic for Courses: Hide/show add button if max reached
     }
 
     function addExperienceBlock(isInitial = false) {
@@ -671,62 +701,84 @@
         const newBlock = template.querySelector(`.${type}-block`);
         const container = document.getElementById(`${type}s-container`); // e.g., experiences-container
 
-        // Determine current index and increment global counter
-        const currentIndex = (type === 'achievement') ? achievementIndex :
-                             (type === 'course') ? courseIndex :
-                             (type === 'experience') ? experienceIndex :
-                             (type === 'education') ? educationIndex :
-                             (type === 'language') ? languageIndex :
-                             (type === 'info') ? infoIndex :
-                             referenceIndex;
+        let currentIndex;
 
-        if (!isInitial || currentIndex === 0) { // Increment if adding new or first initial
-           if (type === 'achievement') achievementIndex++;
-           else if (type === 'course') courseIndex++;
-           else if (type === 'experience') experienceIndex++;
-           else if (type === 'education') educationIndex++;
-           else if (type === 'language') languageIndex++;
-           else if (type === 'info') infoIndex++;
-           else referenceIndex++;
+        // Determine current index and increment global counter
+        if (type === 'achievement') {
+            currentIndex = achievementIndex;
+            achievementIndex++;
+        } else if (type === 'course') {
+            currentIndex = courseIndex;
+            courseIndex++;
+        } else if (type === 'experience') {
+            currentIndex = experienceIndex;
+            experienceIndex++;
+        } else if (type === 'education') {
+            currentIndex = educationIndex;
+            educationIndex++;
+        } else if (type === 'language') {
+            currentIndex = languageIndex;
+            languageIndex++;
+        } else if (type === 'info') {
+            currentIndex = infoIndex;
+            infoIndex++;
+        } else if (type === 'reference') {
+            currentIndex = referenceIndex;
+            referenceIndex++;
         }
 
         // Update names and IDs in the cloned template
-        newBlock.querySelectorAll('input, textarea, label').forEach(el => {
+        newBlock.querySelectorAll('input, textarea, select').forEach(el => {
             const originalName = el.getAttribute('name');
-            const originalFor = el.getAttribute('for'); // Only relevant for labels
-
-            if (originalName) {
+            if (originalName && originalName.endsWith('[]')) { // Only for templates that use array notation
                 const newName = originalName.replace('[]', `[${currentIndex}]`);
                 el.name = newName;
-                // Generate a unique ID based on the new name
-                const newId = newName.replace(/[\[\]]/g, '_').replace(/_$/, `_${currentIndex}`);
-                el.id = newId; // Assign the new ID
+                const newId = `${el.id || el.name.replace(/[\[\]]/g, '_').replace(/_$/, '')}_${currentIndex}`;
+                el.id = newId;
+            } else if (originalName) { // For templates that don't use array notation (e.g. Achiev/Courses previously)
+                // This branch shouldn't be hit after standardizing ach/course templates
+                const newId = `${el.id || originalName.replace(/[\[\]]/g, '_').replace(/_$/, '')}_${currentIndex}`;
+                el.id = newId;
+                // No name change needed if it's not array []
+            }
+        });
 
-                 // Update label 'for' attribute to match the new input ID
-                const correspondingLabel = newBlock.querySelector(`label[for="${originalName.replace('[]', '')}"]`);
-                if (correspondingLabel) {
-                    correspondingLabel.htmlFor = newId;
-                }
-
-                // Set up 'onchange' for the 'present' checkbox specifically
-                if (el.type === 'checkbox' && originalName.includes('present')) {
-                    el.onchange = function() { toggleEndDate(this); };
-                }
-            } else if (originalFor && el.tagName === 'LABEL') {
-                 // If an input was found and ID set above, this label's 'for' might be auto-updated.
-                 // If not, try to find the input by the *new* name pattern and link 'for' to its ID.
-                const inputNameBase = originalFor.replace('[]', ''); // e.g., exp_title
-                const targetInput = newBlock.querySelector(`[name^="${inputNameBase}[${currentIndex}]"]`);
-                if (targetInput && targetInput.id) {
-                     el.htmlFor = targetInput.id;
+        // Update labels' 'for' attribute to match new input IDs
+        newBlock.querySelectorAll('label').forEach(label => {
+            const originalFor = label.getAttribute('for');
+            if (originalFor) {
+                // Find the corresponding input/textarea/select element with the new ID
+                const targetElement = newBlock.querySelector(`[id^="${originalFor.replace(/_\d+$/, '')}_${currentIndex}"]`);
+                if (targetElement) {
+                    label.htmlFor = targetElement.id;
                 }
             }
         });
+
+
+        // Handle the 'present' checkbox for experience/education specific logic
+        if (type === 'experience' || type === 'education') {
+            const presentCheckbox = newBlock.querySelector(`input[name*="present"]`);
+            if (presentCheckbox) {
+                presentCheckbox.id = `${type.slice(0,3)}_present_${currentIndex}`;
+                const endDateInput = newBlock.querySelector(`input[name*="end_date"]`);
+                if (endDateInput) {
+                    endDateInput.id = `${type.slice(0,3)}_end_date_${currentIndex}`;
+                    presentCheckbox.onchange = function() { toggleEndDate(this, endDateInput.id); };
+                }
+            }
+            const presentLabel = newBlock.querySelector(`label[for*="present"]`);
+            if (presentLabel) {
+                 presentLabel.htmlFor = presentCheckbox.id;
+            }
+        }
+
 
         // Update the item number display
         newBlock.querySelector('.item-number').textContent = container.children.length + 1;
 
         // Hide remove button only for the *very first initial* block added
+        // This is now mainly for dynamically added first blocks, not the Jinja-rendered ones
         if (isInitial && container.children.length === 0) {
             const removeBtn = newBlock.querySelector('button[onclick*="removeBlock"]');
             if(removeBtn) removeBtn.style.display = 'none';
@@ -740,15 +792,18 @@
         const container = blockToRemove ? blockToRemove.closest('#achievements-container, #courses-container, #experiences-container, #education-container, #languages-container, #additional-info-container, #references-container') : null;
 
         if (blockToRemove && container) {
-            // Check if this is the last block (only applicable if we enforce at least one)
-            // For now, allow removing all blocks. Add check here if needed:
-            // if (container.querySelectorAll('.' + blockClass).length <= 1) {
-            //     alert("You must have at least one entry.");
-            //     return;
-            // }
             blockToRemove.remove();
-            // Re-number remaining items
             renumberItems(container, blockClass);
+
+            // Re-show the remove button if only one item remains
+            const remainingBlocks = container.querySelectorAll('.' + blockClass);
+            if (remainingBlocks.length === 1) {
+                const singleBlockRemoveBtn = remainingBlocks[0].querySelector('button[onclick*="removeBlock"]');
+                // Only hide if it's one of the sections where the first block's remove button is usually hidden by default
+                if (blockClass === 'info-block' || blockClass === 'reference-block') {
+                    if (singleBlockRemoveBtn) singleBlockRemoveBtn.style.display = 'none';
+                }
+            }
         }
     }
 
@@ -757,10 +812,43 @@
          remainingBlocks.forEach((block, index) => {
              const numberSpan = block.querySelector('.item-number');
              if (numberSpan) numberSpan.textContent = index + 1;
-             // IMPORTANT: Renaming inputs/labels after removal is complex and error-prone.
-             // It's usually better to rely on the server-side handling potentially sparse indices
-             // (e.g., [0], [2] if [1] was removed). Flask's request.form handling should cope.
-             // If strict sequential indexing is required, you'd need a more robust re-indexing function here.
+             // Re-index input names to ensure sequential numbering after removal
+             // This is crucial for Flask's request.form parsing
+             block.querySelectorAll('input, textarea, select').forEach(el => {
+                const nameParts = el.name.match(/^(.+)\[(\d+)\]$/);
+                if (nameParts) {
+                    el.name = `${nameParts[1]}[${index}]`;
+                    el.id = `${nameParts[1].replace(/_$/, '')}_${index}`; // Update ID as well
+                }
+             });
+             block.querySelectorAll('label').forEach(label => {
+                const forAttr = label.getAttribute('for');
+                if (forAttr) {
+                    const forParts = forAttr.match(/^(.+)_(\d+)$/);
+                    if (forParts) {
+                        label.htmlFor = `${forParts[1]}_${index}`;
+                    }
+                }
+            });
+
+            // Special re-indexing for present checkbox and its end date
+            if (blockClass === 'experience-block' || blockClass === 'education-block') {
+                const presentCheckbox = block.querySelector(`input[name*="present"]`);
+                const endDateInput = block.querySelector(`input[name*="end_date"]`);
+                const presentLabel = block.querySelector(`label[for*="present"]`);
+
+                if (presentCheckbox) {
+                    presentCheckbox.id = `${blockClass.startsWith('exp') ? 'exp' : 'edu'}_present_${index}`;
+                    if (presentLabel) presentLabel.htmlFor = presentCheckbox.id;
+                    // Re-bind onchange with correct new end date ID
+                    if (endDateInput) {
+                        presentCheckbox.onchange = function() { toggleEndDate(this, endDateInput.id); };
+                    }
+                }
+                if (endDateInput) {
+                    endDateInput.id = `${blockClass.startsWith('exp') ? 'exp' : 'edu'}_end_date_${index}`;
+                }
+            }
          });
     }
 
@@ -770,7 +858,6 @@
              endDateEl = document.getElementById(specificEndDateId);
         } else { // Used for dynamically added items (find within the same block)
             const parentBlock = checkboxElement.closest('.experience-block, .education-block');
-            // Find the input whose name ends with 'end_date[...]' within the block
             endDateEl = parentBlock ? parentBlock.querySelector('input[type="month"][name*="end_date"]') : null;
         }
 
@@ -797,8 +884,6 @@
                 toggleEndDate(checkbox, endDateId); // Use the specific ID for initial setup
             } else {
                  console.warn("Could not extract index for checkbox:", checkbox);
-                 // Fallback attempt for dynamic items (shouldn't be needed on initial load)
-                 // toggleEndDate(checkbox);
             }
         });
     }
