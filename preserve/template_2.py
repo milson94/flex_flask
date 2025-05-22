@@ -5,61 +5,50 @@ from reportlab.lib.pagesizes import letter
 from reportlab.platypus import Paragraph, Spacer, HRFlowable, KeepTogether, Image, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
-from reportlab.lib.colors import HexColor, gray, black, white, red # Import red color
+from reportlab.lib.colors import HexColor, gray, black, white
 from reportlab.lib.enums import TA_JUSTIFY, TA_LEFT, TA_CENTER
 from reportlab.platypus.frames import Frame
 from reportlab.platypus import BaseDocTemplate, PageTemplate
-from reportlab.pdfgen import canvas # Needed for direct canvas drawing
 
-# --- Custom Canvas Class for Header/Footer ---
-class CustomTwoColumnDoc(BaseDocTemplate):
+class TwoColumnDocument(BaseDocTemplate):
+    """
+    A custom document template for a two-column layout.
+    Content automatically flows from the first column to the second,
+    and then to a new page if both columns are full.
+    """
     def __init__(self, filename, **kwargs):
         BaseDocTemplate.__init__(self, filename, **kwargs)
         self.pageSize = letter
-        margin = 0.5 * inch
-        column_gap = 0.4 * inch
+        margin = 0.5 * inch # Page margins
+        column_gap = 0.4 * inch # Space between columns
         
-        # Calculate column width
+        # Calculate width of each column
         column_width = (self.pageSize[0] - 2 * margin - column_gap) / 2
         
-        # Define the two frames for content flow
-        # Adjusted content_top_margin to pull columns content UP
-        self.content_top_margin = 0.9 * inch # New space from top of page to start of frames (pulled up)
-        frame_bottom_margin = 0.5 * inch # Standard bottom margin
-        
+        # Define the two frames for the columns
         frame1 = Frame(
-            x1=margin,
-            y1=frame_bottom_margin,
+            x1=margin,  # X-coordinate of the left edge
+            y1=self.bottomMargin, # Y-coordinate of the bottom edge
             width=column_width,
-            height=self.pageSize[1] - self.content_top_margin - frame_bottom_margin,
+            height=self.height, # Height of the frame
             id='col1',
-            showBoundary=0
+            showBoundary=0 # Set to 1 for debugging frame boundaries
         )
         frame2 = Frame(
-            x1=margin + column_width + column_gap,
-            y1=frame_bottom_margin,
+            x1=margin + column_width + column_gap, # X-coordinate for the second column
+            y1=self.bottomMargin,
             width=column_width,
-            height=self.pageSize[1] - self.content_top_margin - frame_bottom_margin,
+            height=self.height,
             id='col2',
             showBoundary=0
         )
-        self.addPageTemplates(
-            [PageTemplate(id='TwoColumn', frames=[frame1, frame2], onPage=self._draw_main_title)]
-        )
-
-    def _draw_main_title(self, canvas_obj, doc):
-        """Draws the 'CURRÍCULO VITAE' title directly on the canvas."""
-        canvas_obj.saveState()
-        canvas_obj.setFont('Helvetica-Bold', 26)
-        # Set text color to dark green
-        canvas_obj.setFillColor(HexColor('#388E3C')) # Dark green
         
-        # Position 'CURRÍCULO VITAE' 0.5 inch (left margin) from the left
-        # Adjusted Y-position: Increased margin from top to lower it
-        y_pos = doc.pagesize[1] - 0.65 * inch # Lowered position from top
-        canvas_obj.drawString(doc.leftMargin, y_pos, "CURRÍCULO VITAE")
-        canvas_obj.restoreState()
-
+        # Add a page template that uses both frames.
+        # ReportLab will automatically flow content into frame1, then frame2,
+        # and then create a new page using this template if both frames are full.
+        self.addPageTemplates(
+            [PageTemplate(id='TwoColumn', frames=[frame1, frame2])]
+        )
 
 # Define a mapping for section icons
 # IMPORTANT: Ensure these image files exist at the specified relative paths
@@ -70,12 +59,12 @@ SECTION_ICONS = {
     'personal': os.path.join(BASE_ICON_PATH, 'personal.png'),
     'summary': os.path.join(BASE_ICON_PATH, 'summary.png'),
     'experience': os.path.join(BASE_ICON_PATH, 'experience.png'),
-    'education': os.path.join(BASE_ICON_PATH, 'education.png'), 
-    'achievements': os.path.join(BASE_ICON_PATH, 'achievements.png'), 
+    'education': os.path.join(BASE_ICON_PATH, 'education.png'),
+    'achievements': os.path.join(BASE_ICON_PATH, 'achievements.png'),
     'courses': os.path.join(BASE_ICON_PATH, 'courses.png'),
-    'skills': os.path.join(BASE_ICON_PATH, 'skills.png'), 
+    'skills': os.path.join(BASE_ICON_PATH, 'skills.png'),
     'hobbies': os.path.join(BASE_ICON_PATH, 'hobbies.png'),
-    'languages': os.path.join(BASE_ICON_PATH, 'languages.png'), 
+    'languages': os.path.join(BASE_ICON_PATH, 'languages.png'),
     'additional_info': os.path.join(BASE_ICON_PATH, 'info.png'),
     'references': os.path.join(BASE_ICON_PATH, 'references.png'),
     'projects': os.path.join(BASE_ICON_PATH, 'projects.png'),
@@ -84,28 +73,27 @@ SECTION_ICONS = {
 def generate_pdf(data):
     """Generates a two-column resume PDF using ReportLab from the given data."""
     buffer = io.BytesIO()
-    # Use the custom document template that draws the main title
-    doc = CustomTwoColumnDoc(buffer) 
+    doc = TwoColumnDocument(buffer) # Use the custom two-column document template
     styles = getSampleStyleSheet()
 
     # --- Custom Styles ---
-    # MainTitle style is now largely unused for the "CURRÍCULO VITAE" text itself
-    # as it's drawn directly on canvas, but kept for reference or other potential uses.
+    # Adjusted MainTitle for "CURRÍCULO VITAE"
     styles.add(ParagraphStyle(name='MainTitle', fontName='Helvetica-Bold', fontSize=26, leading=30, alignment=TA_LEFT, spaceAfter=0.2 * inch))
     
-    # New style for the name with green background - adjusted font size and removed padding/indents
-    styles.add(ParagraphStyle(name='NameBoxParagraph', fontName='Helvetica-Bold', fontSize=19, leading=22, alignment=TA_LEFT, 
+    # New style for the name with green background
+    styles.add(ParagraphStyle(name='NameBoxParagraph', fontName='Helvetica-Bold', fontSize=20, leading=24, alignment=TA_LEFT, 
                                 backColor=HexColor('#4CAF50'), textColor=white, 
-                                spaceBefore=0.0 * inch, spaceAfter=0.1 * inch, # Adjusted vertical spacing
-                                leftIndent=0, rightIndent=0, # Removed horizontal indent to touch column margin
-                                borderPadding=(0, 0, 0, 0) # Removed border padding
+                                spaceBefore=0.1 * inch, spaceAfter=0.1 * inch,
+                                leftIndent=0.1 * inch, rightIndent=0.1 * inch, # Small padding
+                                borderPadding=(4, 4, 4, 4) # padding inside the 'box'
                                 ))
     
+    # Original ContactHeader remains as it was
     styles.add(ParagraphStyle(name='ContactHeader', fontName='Helvetica', fontSize=9, leading=11, alignment=TA_LEFT, spaceAfter=0.08 * inch))
     
-    # SectionTitle now a slightly darker green
-    styles.add(ParagraphStyle(name='SectionTitle', fontName='Helvetica-Bold', fontSize=13, leading=16, spaceBefore=0.15 * inch, spaceAfter=0.08 * inch, textColor=HexColor('#388E3C'))) # Darker green
-
+    # SectionTitle now green
+    styles.add(ParagraphStyle(name='SectionTitle', fontName='Helvetica-Bold', fontSize=13, leading=16, spaceBefore=0.15 * inch, spaceAfter=0.08 * inch, textColor=HexColor('#4CAF50')))
+    
     styles.add(ParagraphStyle(name='JobTitle', fontName='Helvetica-Bold', fontSize=10, leading=13))
     styles.add(ParagraphStyle(name='CompanyDate', fontName='Helvetica-Oblique', fontSize=9, leading=11, textColor=gray, spaceAfter=0.04 * inch))
     styles.add(ParagraphStyle(name='BulletPoint', parent=styles['Normal'], leftIndent=0.2 * inch, bulletIndent=0.1 * inch, firstLineIndent=0, spaceBefore=0.04 * inch, splitLongWords=True,))
@@ -115,8 +103,8 @@ def generate_pdf(data):
 
     story = [] # This list will hold all the flowables for the PDF
 
-    # The main title "CURRÍCULO VITAE" is now handled by _draw_main_title in CustomTwoColumnDoc's onPage callback.
-    # So, it's NOT added here to the 'story' list.
+    # --- Main Title ---
+    story.append(Paragraph("CURRÍCULO VITAE", styles['MainTitle']))
 
     # --- Personal Details Section ---
     personal_details_elements = [] # Collect elements for KeepTogether
@@ -306,7 +294,7 @@ def generate_pdf(data):
 
                 language_table = Table(language_data)
                 language_table.setStyle(TableStyle([
-                    ('BACKGROUND', (0, 0), (-1, 0), red), # Changed to red here
+                    ('BACKGROUND', (0, 0), (-1, 0), HexColor("#333333")),
                     ('TEXTCOLOR', (0, 0), (-1, 0), white),
                     ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
                     ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),

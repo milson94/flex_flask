@@ -368,3 +368,6 @@ data = {
 
 pdf_buffer = generate_pdf(data)
 
+# Save the PDF to a file
+with open('resume_a4.pdf', 'wb') as f:
+    f.write(pdf_buffer.read())

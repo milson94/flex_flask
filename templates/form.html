@@ -6,7 +6,7 @@
 
 {% block content %}
 <div class="max-w-3xl mx-auto bg-white p-6 md:p-10 rounded-xl shadow-lg">
-    <h1 class="text-3xl font-bold text-center text-sky-700 mb-8">{{ title }}</h1>
+    <h1 class="text-3xl font-bold text-center text-sky-700 mb-8">Crie seu Currículo</h1> {# Updated Title #}
     <p class="text-center text-slate-500 text-sm mb-6">Preencha seus detalhes abaixo. Você pode adicionar múltiplas experiências e entradas de educação.</p>
     <form method="POST" action="{{ url_for('resume_form') }}" class="space-y-8">
 
@@ -81,7 +81,7 @@
               {% for i in range(3) %} {# Changed range to 0-indexed for consistency with loop.index0 #}
               {% set ach = data.key_achievements[i] if data.key_achievements and i < data.key_achievements|length else {} %}
               <div class="achievement-block p-3 border border-slate-200 rounded-md bg-slate-50 relative">
-                  <button type="button" onclick="removeBlock(this, 'achievement-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Conquista" {% if loop.index0 >= data.key_achievements|length %}style="display: none;"{% endif %}>×</button> {# Hide remove button for empty initial blocks #}
+                  <button type="button" onclick="removeBlock(this, 'achievement-block')" class="remove-btn-style" title="Remover Conquista">×</button> {# Now always visible #}
                   <h4 class="text-md font-medium text-slate-600 mb-2">Conquista {{loop.index}}</h4>
                   <div>
                       <label for="ach_title_{{i}}" class="block text-sm font-medium text-slate-700 mb-1">Título:</label>
@@ -106,7 +106,7 @@
                 {% for i in range(2) %} {# Changed range to 0-indexed for consistency with loop.index0 #}
                 {% set course = data.courses[i] if data.courses and i < data.courses|length else {} %}
                 <div class="course-block p-3 border border-slate-200 rounded-md bg-slate-50 relative">
-                    <button type="button" onclick="removeBlock(this, 'course-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Curso" {% if loop.index0 >= data.courses|length %}style="display: none;"{% endif %}>×</button> {# Hide remove button for empty initial blocks #}
+                    <button type="button" onclick="removeBlock(this, 'course-block')" class="remove-btn-style" title="Remover Curso">×</button> {# Now always visible #}
                      <h4 class="text-md font-medium text-slate-600 mb-2">Curso/Cert {{loop.index}}</h4>
                     <div>
                         <label for="course_title_{{i}}" class="block text-sm font-medium text-slate-700 mb-1">Título do Curso/Certificado:</label>
@@ -130,7 +130,7 @@
             <div id="experiences-container" class="space-y-6">
                 {% for exp in data.experiences %}
                 <div class="experience-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
-                    <button type="button" onclick="removeBlock(this, 'experience-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Experiência">×</button>
+                    <button type="button" onclick="removeBlock(this, 'experience-block')" class="remove-btn-style" title="Remover Experiência">×</button>
                     <h3 class="text-lg font-medium text-slate-700 mb-3">Experiência <span class="item-number">{{ loop.index }}</span></h3>
                     <div class="space-y-4">
                         <div>
@@ -174,8 +174,7 @@
                     </div>
                 </div>
                 {% else %}
-                 {# Optionally show a message if no experiences exist yet #}
-                 {# <p class="text-slate-500 italic">No experiences added yet.</p> #}
+                 {# If no experiences, nothing is rendered, user clicks "Add" button #}
                 {% endfor %}
             </div>
             <button type="button" id="add-experience-btn" class="mt-6 px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
@@ -189,7 +188,7 @@
             <div id="education-container" class="space-y-6">
                 {% for edu in data.education_entries %}
                 <div class="education-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
-                    <button type="button" onclick="removeBlock(this, 'education-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Educação">×</button>
+                    <button type="button" onclick="removeBlock(this, 'education-block')" class="remove-btn-style" title="Remover Educação">×</button>
                     <h3 class="text-lg font-medium text-slate-700 mb-3">Educação <span class="item-number">{{ loop.index }}</span></h3>
                     <div class="space-y-4">
                         <div>
@@ -225,7 +224,7 @@
                     </div>
                 </div>
                  {% else %}
-                  {# <p class="text-slate-500 italic">No education entries added yet.</p> #}
+                  {# If no education entries, nothing is rendered, user clicks "Add" button #}
                 {% endfor %}
             </div>
             <button type="button" id="add-education-btn" class="mt-6 px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
@@ -239,7 +238,7 @@
             <div id="languages-container" class="space-y-6">
                 {% for lang in data.languages %}
                 <div class="language-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
-                    <button type="button" onclick="removeBlock(this, 'language-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Idioma">×</button>
+                    <button type="button" onclick="removeBlock(this, 'language-block')" class="remove-btn-style" title="Remover Idioma">×</button>
                     <h3 class="text-lg font-medium text-slate-700 mb-3">Idioma <span class="item-number">{{ loop.index }}</span></h3>
                     <div class="space-y-4">
                         <div>
@@ -283,7 +282,7 @@
                     </div>
                 </div>
                 {% else %}
-                 {# <p class="text-slate-500 italic">No languages added yet.</p> #}
+                 {# If no languages, nothing is rendered, user clicks "Add" button #}
                 {% endfor %}
             </div>
             <button type="button" id="add-language-btn" class="mt-6 px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
@@ -295,40 +294,23 @@
         <fieldset class="border border-slate-300 p-6 rounded-md">
             <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Informações Adicionais</legend>
             <div id="additional-info-container" class="space-y-6">
-                {% if not data.additional_info %}
-                {# Render one empty info block if no data exists #}
+                {# Initial state: Display nothing if data.additional_info is empty. User clicks button to add. #}
+                {% for info in data.additional_info %}
                 <div class="info-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
-                    <button type="button" onclick="removeBlock(this, 'info-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Informação" style="display: none;">×</button>
-                    <h3 class="text-lg font-medium text-slate-700 mb-3">Informação <span class="item-number">1</span></h3>
+                    <button type="button" onclick="removeBlock(this, 'info-block')" class="remove-btn-style" title="Remover Informação">×</button>
+                    <h3 class="text-lg font-medium text-slate-700 mb-3">Informação <span class="item-number">{{ loop.index }}</span></h3>
                     <div class="space-y-4">
                         <div>
-                            <label for="info_title_0" class="block text-sm font-medium text-slate-700 mb-1">Título:</label>
-                            <input type="text" id="info_title_0" name="info_title[0]" value="" class="form-input-base" required>
+                            <label for="info_title_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Título:</label>
+                            <input type="text" id="info_title_{{loop.index0}}" name="info_title[{{loop.index0}}]" value="{{ info.title | default('', true) }}" class="form-input-base" required>
                         </div>
                         <div>
-                            <label for="info_description_0" class="block text-sm font-medium text-slate-700 mb-1">Descrição:</label>
-                            <textarea id="info_description_0" name="info_description[0]" rows="3" class="form-textarea-base min-h-[80px]"></textarea>
+                            <label for="info_description_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Descrição:</label>
+                            <textarea id="info_description_{{loop.index0}}" name="info_description[{{loop.index0}}]" rows="3" class="form-textarea-base min-h-[80px]">{{ info.description | default('', true) }}</textarea>
                         </div>
                     </div>
                 </div>
-                {% else %}
-                    {% for info in data.additional_info %}
-                    <div class="info-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
-                        <button type="button" onclick="removeBlock(this, 'info-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Informação">×</button>
-                        <h3 class="text-lg font-medium text-slate-700 mb-3">Informação <span class="item-number">{{ loop.index }}</span></h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label for="info_title_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Título:</label>
-                                <input type="text" id="info_title_{{loop.index0}}" name="info_title[{{loop.index0}}]" value="{{ info.title | default('', true) }}" class="form-input-base" required>
-                            </div>
-                            <div>
-                                <label for="info_description_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Descrição:</label>
-                                <textarea id="info_description_{{loop.index0}}" name="info_description[{{loop.index0}}]" rows="3" class="form-textarea-base min-h-[80px]">{{ info.description | default('', true) }}</textarea>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                {% endif %}
+                {% endfor %}
             </div>
             <button type="button" id="add-info-btn" class="mt-6 px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
                 + Adicionar Informação
@@ -339,56 +321,31 @@
         <fieldset class="border border-slate-300 p-6 rounded-md">
             <legend class="text-xl font-semibold text-sky-600 px-2 mb-4">Referências</legend>
             <div id="references-container" class="space-y-6">
-                {% if not data.references %}
-                {# Render one empty reference block if no data exists #}
+                {# Initial state: Display nothing if data.references is empty. User clicks button to add. #}
+                {% for ref in data.references %}
                 <div class="reference-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
-                    <button type="button" onclick="removeBlock(this, 'reference-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Referência" style="display: none;">×</button>
-                    <h3 class="text-lg font-medium text-slate-700 mb-3">Referência <span class="item-number">1</span></h3>
+                    <button type="button" onclick="removeBlock(this, 'reference-block')" class="remove-btn-style" title="Remover Referência">×</button>
+                    <h3 class="text-lg font-medium text-slate-700 mb-3">Referência <span class="item-number">{{ loop.index }}</span></h3>
                     <div class="space-y-4">
                         <div>
-                            <label for="ref_name_0" class="block text-sm font-medium text-slate-700 mb-1">Nome:</label>
-                            <input type="text" id="ref_name_0" name="ref_name[0]" value="" class="form-input-base" required>
+                            <label for="ref_name_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Nome:</label>
+                            <input type="text" id="ref_name_{{loop.index0}}" name="ref_name[{{loop.index0}}]" value="{{ ref.name | default('Maria Santos', true) }}" class="form-input-base" required>
                         </div>
                         <div>
-                            <label for="ref_title_0" class="block text-sm font-medium text-slate-700 mb-1">Cargo:</label>
-                            <input type="text" id="ref_title_0" name="ref_title[0]" value="" class="form-input-base">
+                            <label for="ref_title_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Cargo:</label>
+                            <input type="text" id="ref_title_{{loop.index0}}" name="ref_title[{{loop.index0}}]" value="{{ ref.title | default('Gerente de Projetos, Tech Solutions Lda', true) }}" class="form-input-base">
                         </div>
                         <div>
-                            <label for="ref_phone_0" class="block text-sm font-medium text-slate-700 mb-1">Telefone:</label>
-                            <input type="tel" id="ref_phone_0" name="ref_phone[0]" value="" class="form-input-base">
+                            <label for="ref_phone_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Telefone:</label>
+                            <input type="tel" id="ref_phone_{{loop.index0}}" name="ref_phone[{{loop.index0}}]" value="{{ ref.phone | default('Disponível mediante solicitação', true) }}" class="form-input-base">
                         </div>
                         <div>
-                            <label for="ref_description_0" class="block text-sm font-medium text-slate-700 mb-1">Descrição:</label>
-                            <textarea id="ref_description_0" name="ref_description[0]" rows="3" class="form-textarea-base min-h-[80px]"></textarea>
+                            <label for="ref_description_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Descrição:</label>
+                            <textarea id="ref_description_{{loop.index0}}" name="ref_description[{{loop.index0}}]" rows="3" class="form-textarea-base min-h-[80px]">{{ ref.description | default('', true) }}</textarea>
                         </div>
                     </div>
                 </div>
-                {% else %}
-                    {% for ref in data.references %}
-                    <div class="reference-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
-                        <button type="button" onclick="removeBlock(this, 'reference-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Referência">×</button>
-                        <h3 class="text-lg font-medium text-slate-700 mb-3">Referência <span class="item-number">{{ loop.index }}</span></h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label for="ref_name_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Nome:</label>
-                                <input type="text" id="ref_name_{{loop.index0}}" name="ref_name[{{loop.index0}}]" value="{{ ref.name | default('Maria Santos', true) }}" class="form-input-base" required>
-                            </div>
-                            <div>
-                                <label for="ref_title_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Cargo:</label>
-                                <input type="text" id="ref_title_{{loop.index0}}" name="ref_title[{{loop.index0}}]" value="{{ ref.title | default('Gerente de Projetos, Tech Solutions Lda', true) }}" class="form-input-base">
-                            </div>
-                            <div>
-                                <label for="ref_phone_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Telefone:</label>
-                                <input type="tel" id="ref_phone_{{loop.index0}}" name="ref_phone[{{loop.index0}}]" value="{{ ref.phone | default('Disponível mediante solicitação', true) }}" class="form-input-base">
-                            </div>
-                            <div>
-                                <label for="ref_description_{{loop.index0}}" class="block text-sm font-medium text-slate-700 mb-1">Descrição:</label>
-                                <textarea id="ref_description_{{loop.index0}}" name="ref_description[{{loop.index0}}]" rows="3" class="form-textarea-base min-h-[80px]">{{ ref.description | default('', true) }}</textarea>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                {% endif %}
+                {% endfor %}
             </div>
             <button type="button" id="add-reference-btn" class="mt-6 px-4 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
                 + Adicionar Referência
@@ -401,7 +358,7 @@
             <div class="space-y-4">
                 <div>
                     <label for="skills" class="block text-sm font-medium text-slate-700 mb-1">Habilidades:</label>
-                    <textarea id="skills" name="skills" rows="4" class="form-textarea-base min-h-[80px]">{{ data.skills | default('PHP, Laravel, JavaScript, Vue.js, React, Node.js, HTML5, CSS3, Tailwind CSS, SQL (MySQL, PostgreSQL), NoSQL (MongoDB), Git, Docker, REST APIs, GraphQL, Testes Unitários (PHPUnit), Metodologias Ágeis (Scrum), Resolução de Problemas, Comunicação, Trabalho em Equipe', true) }}</textarea>
+                    <textarea id="skills" name="skills" rows="4" class="form-textarea-base min-h-[80px]" placeholder="separe habilidades com vírgula ...">{{ data.skills | default('PHP, Laravel, JavaScript, Vue.js, React, Node.js, HTML5, CSS3, Tailwind CSS, SQL (MySQL, PostgreSQL), NoSQL (MongoDB), Git, Docker, REST APIs, GraphQL, Testes Unitários (PHPUnit), Metodologias Ágeis (Scrum), Resolução de Problemas, Comunicação, Trabalho em Equipe', true) }}</textarea>
                 </div>
             </div>
         </fieldset>
@@ -417,7 +374,7 @@
 <!-- Template for Achievement Block -->
 <template id="achievement-template">
     <div class="achievement-block p-3 border border-slate-200 rounded-md bg-slate-50 relative">
-        <button type="button" onclick="removeBlock(this, 'achievement-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Conquista">×</button>
+        <button type="button" onclick="removeBlock(this, 'achievement-block')" class="remove-btn-style" title="Remover Conquista">×</button>
         <h4 class="text-md font-medium text-slate-600 mb-2">Conquista <span class="item-number"></span></h4>
         <div>
             <label class="block text-sm font-medium text-slate-700 mb-1">Título:</label>
@@ -433,7 +390,7 @@
 <!-- Template for Course Block -->
 <template id="course-template">
     <div class="course-block p-3 border border-slate-200 rounded-md bg-slate-50 relative">
-        <button type="button" onclick="removeBlock(this, 'course-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Curso">×</button>
+        <button type="button" onclick="removeBlock(this, 'course-block')" class="remove-btn-style" title="Remover Curso">×</button>
         <h4 class="text-md font-medium text-slate-600 mb-2">Curso/Cert <span class="item-number"></span></h4>
         <div>
             <label class="block text-sm font-medium text-slate-700 mb-1">Título do Curso/Certificado:</label>
@@ -449,7 +406,7 @@
 <!-- Template for Experience Block -->
 <template id="experience-template">
     <div class="experience-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
-        <button type="button" onclick="removeBlock(this, 'experience-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Experiência">×</button>
+        <button type="button" onclick="removeBlock(this, 'experience-block')" class="remove-btn-style" title="Remover Experiência">×</button>
         <h3 class="text-lg font-medium text-slate-700 mb-3">Experiência <span class="item-number"></span></h3>
         <div class="space-y-4">
             <div>
@@ -497,7 +454,7 @@
 <!-- Template for Education Block -->
 <template id="education-template">
     <div class="education-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
-        <button type="button" onclick="removeBlock(this, 'education-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Educação">×</button>
+        <button type="button" onclick="removeBlock(this, 'education-block')" class="remove-btn-style" title="Remover Educação">×</button>
         <h3 class="text-lg font-medium text-slate-700 mb-3">Educação <span class="item-number"></span></h3>
         <div class="space-y-4">
             <div>
@@ -537,7 +494,7 @@
 <!-- Template for Language Block -->
 <template id="language-template">
     <div class="language-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
-        <button type="button" onclick="removeBlock(this, 'language-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Idioma">×</button>
+        <button type="button" onclick="removeBlock(this, 'language-block')" class="remove-btn-style" title="Remover Idioma">×</button>
         <h3 class="text-lg font-medium text-slate-700 mb-3">Idioma <span class="item-number"></span></h3>
         <div class="space-y-4">
             <div>
@@ -585,7 +542,7 @@
 <!-- Template for Additional Info Block -->
 <template id="info-template">
     <div class="info-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
-        <button type="button" onclick="removeBlock(this, 'info-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Informação">×</button>
+        <button type="button" onclick="removeBlock(this, 'info-block')" class="remove-btn-style" title="Remover Informação">×</button>
         <h3 class="text-lg font-medium text-slate-700 mb-3">Informação <span class="item-number"></span></h3>
         <div class="space-y-4">
             <div>
@@ -603,7 +560,7 @@
 <!-- Template for Reference Block -->
 <template id="reference-template">
     <div class="reference-block border border-slate-200 p-4 rounded-md bg-slate-50 relative">
-        <button type="button" onclick="removeBlock(this, 'reference-block')" class="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl px-2 py-0 leading-none rounded-full hover:bg-red-100 transition-colors" title="Remover Referência">×</button>
+        <button type="button" onclick="removeBlock(this, 'reference-block')" class="remove-btn-style" title="Remover Referência">×</button>
         <h3 class="text-lg font-medium text-slate-700 mb-3">Referência <span class="item-number"></span></h3>
         <div class="space-y-4">
             <div>
@@ -630,73 +587,32 @@
 {% block body_end_scripts %}
 <script>
     // Keep track of the next index to use for dynamically added blocks
-    // Initialize based on the number of blocks rendered from server-side data
-    // For sections with fixed initial blocks (Achievements, Courses), the index starts AFTER those.
-    let achievementIndex = Math.max({{ data.key_achievements|length if data.key_achievements else 0 }}, 3); // Max 3 achievements initially rendered
-    let courseIndex = Math.max({{ data.courses|length if data.courses else 0 }}, 2); // Max 2 courses initially rendered
+    // Initialized based on the number of blocks rendered from server-side data.
+    // If a section is empty initially, its index starts at 0.
+    let achievementIndex = {{ data.key_achievements|length if data.key_achievements else 0 }};
+    let courseIndex = {{ data.courses|length if data.courses else 0 }};
     let experienceIndex = {{ data.experiences|length if data.experiences else 0 }};
     let educationIndex = {{ data.education_entries|length if data.education_entries else 0 }};
     let languageIndex = {{ data.languages|length if data.languages else 0 }};
-    // For Additional Info and References, set to 1 if empty because Jinja now renders the 0th item.
-    let infoIndex = {{ data.additional_info|length if data.additional_info else 1 }};
-    let referenceIndex = {{ data.references|length if data.references else 1 }};
+    let infoIndex = {{ data.additional_info|length if data.additional_info else 0 }};
+    let referenceIndex = {{ data.references|length if data.references else 0 }};
 
     document.addEventListener('DOMContentLoaded', function () {
-        // No longer need to add initial blocks for these sections via JS as Jinja now handles it.
-        // if (infoIndex === 0 && document.getElementById('additional-info-container').children.length === 0) {
-        //     addInfoBlock(true);
-        // }
-        // if (referenceIndex === 0 && document.getElementById('references-container').children.length === 0) {
-        //     addReferenceBlock(true);
-        // }
-
         // Initial "Present" checkboxes state for existing items loaded from data
         initializePresentCheckboxes();
 
-        // Add event listeners to buttons
-        document.getElementById('add-achievement-btn').addEventListener('click', () => addAchievementBlock(false));
-        document.getElementById('add-course-btn').addEventListener('click', () => addCourseBlock(false));
-        document.getElementById('add-experience-btn').addEventListener('click', () => addExperienceBlock(false));
-        document.getElementById('add-education-btn').addEventListener('click', () => addEducationBlock(false));
-        document.getElementById('add-language-btn').addEventListener('click', () => addLanguageBlock(false));
-        document.getElementById('add-info-btn').addEventListener('click', () => addInfoBlock(false));
-        document.getElementById('add-reference-btn').addEventListener('click', () => addReferenceBlock(false));
+        // Add event listeners to buttons for dynamic sections
+        document.getElementById('add-achievement-btn').addEventListener('click', () => addDynamicBlock('achievement'));
+        document.getElementById('add-course-btn').addEventListener('click', () => addDynamicBlock('course'));
+        document.getElementById('add-experience-btn').addEventListener('click', () => addDynamicBlock('experience'));
+        document.getElementById('add-education-btn').addEventListener('click', () => addDynamicBlock('education'));
+        document.getElementById('add-language-btn').addEventListener('click', () => addDynamicBlock('language'));
+        document.getElementById('add-info-btn').addEventListener('click', () => addDynamicBlock('info'));
+        document.getElementById('add-reference-btn').addEventListener('click', () => addDynamicBlock('reference'));
     });
 
-    // --- Dynamic Block Functions ---
-
-    function addAchievementBlock(isInitial = false) {
-        addDynamicBlock('achievement', isInitial);
-        // Special logic for Achievements: Hide/show add button if max reached
-        // This is typically handled by disabling the button when limit is hit.
-    }
-
-    function addCourseBlock(isInitial = false) {
-        addDynamicBlock('course', isInitial);
-        // Special logic for Courses: Hide/show add button if max reached
-    }
-
-    function addExperienceBlock(isInitial = false) {
-        addDynamicBlock('experience', isInitial);
-    }
-
-    function addEducationBlock(isInitial = false) {
-        addDynamicBlock('education', isInitial);
-    }
-
-    function addLanguageBlock(isInitial = false) {
-        addDynamicBlock('language', isInitial);
-    }
-
-    function addInfoBlock(isInitial = false) {
-        addDynamicBlock('info', isInitial);
-    }
-
-    function addReferenceBlock(isInitial = false) {
-        addDynamicBlock('reference', isInitial);
-    }
-
-    function addDynamicBlock(type, isInitial = false) {
+    // Function to add a new dynamic block
+    function addDynamicBlock(type) {
         const template = document.getElementById(`${type}-template`).content.cloneNode(true);
         const newBlock = template.querySelector(`.${type}-block`);
         const container = document.getElementById(`${type}s-container`); // e.g., experiences-container
@@ -730,16 +646,13 @@
         // Update names and IDs in the cloned template
         newBlock.querySelectorAll('input, textarea, select').forEach(el => {
             const originalName = el.getAttribute('name');
-            if (originalName && originalName.endsWith('[]')) { // Only for templates that use array notation
-                const newName = originalName.replace('[]', `[${currentIndex}]`);
-                el.name = newName;
-                const newId = `${el.id || el.name.replace(/[\[\]]/g, '_').replace(/_$/, '')}_${currentIndex}`;
-                el.id = newId;
-            } else if (originalName) { // For templates that don't use array notation (e.g. Achiev/Courses previously)
-                // This branch shouldn't be hit after standardizing ach/course templates
-                const newId = `${el.id || originalName.replace(/[\[\]]/g, '_').replace(/_$/, '')}_${currentIndex}`;
-                el.id = newId;
-                // No name change needed if it's not array []
+            // Ensure IDs are unique and names are correctly indexed
+            if (originalName && originalName.endsWith('[]')) { // Standard array naming from templates
+                const baseName = originalName.slice(0, -2); // remove '[]'
+                el.name = `${baseName}[${currentIndex}]`;
+                el.id = `${baseName}_${currentIndex}`;
+            } else if (originalName) { // Fallback for cases where originalName might not have `[]`
+                el.id = `${originalName.replace(/[\[\]]/g, '_').replace(/_$/, '')}_${currentIndex}`;
             }
         });
 
@@ -747,14 +660,15 @@
         newBlock.querySelectorAll('label').forEach(label => {
             const originalFor = label.getAttribute('for');
             if (originalFor) {
+                // Determine the base ID without the index suffix
+                const baseId = originalFor.replace(/_\d+$/, '');
                 // Find the corresponding input/textarea/select element with the new ID
-                const targetElement = newBlock.querySelector(`[id^="${originalFor.replace(/_\d+$/, '')}_${currentIndex}"]`);
+                const targetElement = newBlock.querySelector(`[id="${baseId}_${currentIndex}"]`);
                 if (targetElement) {
                     label.htmlFor = targetElement.id;
                 }
             }
         });
-
 
         // Handle the 'present' checkbox for experience/education specific logic
         if (type === 'experience' || type === 'education') {
@@ -773,17 +687,10 @@
             }
         }
 
-
         // Update the item number display
         newBlock.querySelector('.item-number').textContent = container.children.length + 1;
 
-        // Hide remove button only for the *very first initial* block added
-        // This is now mainly for dynamically added first blocks, not the Jinja-rendered ones
-        if (isInitial && container.children.length === 0) {
-            const removeBtn = newBlock.querySelector('button[onclick*="removeBlock"]');
-            if(removeBtn) removeBtn.style.display = 'none';
-        }
-
+        // The remove button style ensures it's visible by default, no need to explicitly show/hide here.
         container.appendChild(newBlock);
     }
 
@@ -795,14 +702,21 @@
             blockToRemove.remove();
             renumberItems(container, blockClass);
 
-            // Re-show the remove button if only one item remains
-            const remainingBlocks = container.querySelectorAll('.' + blockClass);
-            if (remainingBlocks.length === 1) {
-                const singleBlockRemoveBtn = remainingBlocks[0].querySelector('button[onclick*="removeBlock"]');
-                // Only hide if it's one of the sections where the first block's remove button is usually hidden by default
-                if (blockClass === 'info-block' || blockClass === 'reference-block') {
-                    if (singleBlockRemoveBtn) singleBlockRemoveBtn.style.display = 'none';
-                }
+            // Re-adjust the global index after removal
+            if (blockClass === 'achievement-block') {
+                achievementIndex = container.children.length;
+            } else if (blockClass === 'course-block') {
+                courseIndex = container.children.length;
+            } else if (blockClass === 'experience-block') {
+                experienceIndex = container.children.length;
+            } else if (blockClass === 'education-block') {
+                educationIndex = container.children.length;
+            } else if (blockClass === 'language-block') {
+                languageIndex = container.children.length;
+            } else if (blockClass === 'info-block') {
+                infoIndex = container.children.length;
+            } else if (blockClass === 'reference-block') {
+                referenceIndex = container.children.length;
             }
         }
     }
@@ -812,26 +726,33 @@
          remainingBlocks.forEach((block, index) => {
              const numberSpan = block.querySelector('.item-number');
              if (numberSpan) numberSpan.textContent = index + 1;
-             // Re-index input names to ensure sequential numbering after removal
-             // This is crucial for Flask's request.form parsing
+
+             // Re-index input names and IDs to ensure sequential numbering after removal
              block.querySelectorAll('input, textarea, select').forEach(el => {
-                const nameParts = el.name.match(/^(.+)\[(\d+)\]$/);
+                const nameParts = el.name.match(/^(.+)\[\d+\]$/); // Match existing index in name
                 if (nameParts) {
-                    el.name = `${nameParts[1]}[${index}]`;
-                    el.id = `${nameParts[1].replace(/_$/, '')}_${index}`; // Update ID as well
+                    const baseName = nameParts[1];
+                    el.name = `${baseName}[${index}]`;
+                    el.id = `${baseName}_${index}`; // Update ID as well
+                } else {
+                    // For elements like skills, no array indexing, just re-id if needed
+                    const idParts = el.id.match(/^(.+)_\d+$/);
+                    if (idParts) {
+                        el.id = `${idParts[1]}_${index}`;
+                    }
                 }
              });
+
+             // Re-index label 'for' attributes
              block.querySelectorAll('label').forEach(label => {
                 const forAttr = label.getAttribute('for');
                 if (forAttr) {
-                    const forParts = forAttr.match(/^(.+)_(\d+)$/);
-                    if (forParts) {
-                        label.htmlFor = `${forParts[1]}_${index}`;
-                    }
+                    const baseFor = forAttr.replace(/_\d+$/, '');
+                    label.htmlFor = `${baseFor}_${index}`;
                 }
             });
 
-            // Special re-indexing for present checkbox and its end date
+            // Special re-indexing and re-binding for present checkbox and its end date
             if (blockClass === 'experience-block' || blockClass === 'education-block') {
                 const presentCheckbox = block.querySelector(`input[name*="present"]`);
                 const endDateInput = block.querySelector(`input[name*="end_date"]`);
@@ -889,4 +810,40 @@
     }
 
 </script>
+<style>
+    /* New CSS for the remove buttons */
+    .remove-btn-style {
+        position: absolute;
+        top: 0.25rem; /* ~4px */
+        right: 0.25rem; /* ~4px */
+        background-color: #fee2e2; /* red-100 */
+        color: #b91c1c; /* red-700 */
+        font-weight: bold;
+        font-size: 1.25rem; /* text-xl */
+        width: 2rem; /* w-8 */
+        height: 2rem; /* h-8 */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.375rem; /* rounded-md */
+        transition: background-color 150ms ease-in-out, color 150ms ease-in-out, box-shadow 150ms ease-in-out;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+        line-height: 1; /* Adjust line height to properly center 'x' */
+        z-index: 10; /* Ensure it's above other elements if overlaps occur */
+        border: none; /* Remove default button border */
+        cursor: pointer;
+    }
+
+    .remove-btn-style:hover {
+        background-color: #fecaca; /* red-200 */
+        color: #991b1b; /* red-900 */
+        box-shadow: 0 0 0 2px #f87171, 0 0 0 4px #fee2e2; /* Focus ring on hover */
+        outline: none; /* Remove default outline */
+    }
+
+    .remove-btn-style:focus {
+        outline: none; /* Remove default outline */
+        box-shadow: 0 0 0 2px #f87171, 0 0 0 4px #fee2e2; /* Apply focus ring on focus */
+    }
+</style>
 {% endblock %}
